@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "80366015424",
+    "project_id": "morningassembly",
+    "storage_bucket": "morningassembly.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80366015424:android:a07577fc7338835497ae25",
+        "android_client_info": {
+          "package_name": "com.indus.morningAssembly"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "80366015424-sopmphaghrqs59evuu97th90kmbgu06a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfYGBIV-c9HKfekivJ6YqpoT-imVFHH6Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "80366015424-sopmphaghrqs59evuu97th90kmbgu06a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
