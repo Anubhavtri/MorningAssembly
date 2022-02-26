@@ -29,6 +29,8 @@ import APIName from '../../utility/api/apiName';
 import loggedInClient from '../../utility/apiAuth/loggedInClient';
 import TrackStack from '../../navigation/stack/TrackStack';
 import DriverDashboardStack from '../../navigation/stack/DriverDashboardStack';
+import NotificaationStack from '../../navigation/stack/NotificaationStack';
+
 import Requested from '../../component/Screens/Home'
 import Ongoing from '../../component/Screens/ADD_Post';
 
@@ -38,13 +40,16 @@ import * as RootNavigation from '../../RootNavigation';
 const User_Dashboard = props => {
     const Drawer = createDrawerNavigator();
     const [VisibleTab, setVisibleTab] = useState('Requested');
+    const [tabname, settabname] = useState('Home');
+    const [NotificationVisible, setNotificationVisible] = React.useState(false);
+
     const [driver, setdriver] = React.useState(false);
 
     const [modalVisible, setModalVisible] = useState(false);
     useFocusEffect(
         React.useCallback(() => {
             console.log("useFocusEffect is working UserDashboard>>")
-
+            setNotificationVisible(true)
             getStoreData();
 
             // setTimeout(async () => {
@@ -53,6 +58,7 @@ const User_Dashboard = props => {
             // }, 2000);
         }, [])
     );
+  
     const getStoreData = async value => {
         try {
             const value = await AsyncStorage.getItem('@storage_Key');
@@ -119,7 +125,8 @@ const User_Dashboard = props => {
                 <TouchableOpacity
                     onPress={() => {
                         console.log("working C");
-                        // setVisibleTab('Tracking')
+                        setNotificationVisible(false)
+                        // setVisibleTab('startSession')
                         props.navigation.closeDrawer()
                         {
                             driver ?
@@ -196,18 +203,21 @@ const User_Dashboard = props => {
 
     const HomeScreen = (props) => {
         if (VisibleTab == 'Requested' || VisibleTab == 'ongoing' || VisibleTab == 'Completed') {
+            {setNotificationVisible(true)}
             return (
+               
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                   
+
                     {RenderTab()}
-                  
-                   <View style={{ position: 'absolute', width: '100%', height: '100%' }}>
+
+                    <View style={{ position: 'absolute', width: '100%', height: '100%' }}>
                         <View style={{ backgroundColor: 'transparent', height: s(40), flexDirection: 'row', position: 'absolute', bottom: 0, width: '100%' }}>
                             <TouchableOpacity
                                 style={{ flex: 1, justifyContent: 'center', marginRight: s(2), marginTop: s(2) }}
                                 onPress={() => {
                                     console.log("working A");
                                     setVisibleTab('Requested')
+                                    settabname('Home');
                                 }}>
                                 <View style={{ flex: 1, justifyContent: 'center', marginRight: s(2) }}>
                                     {VisibleTab == 'Requested' ?
@@ -236,6 +246,7 @@ const User_Dashboard = props => {
                                 onPress={() => {
                                     console.log("working B");
                                     setVisibleTab('ongoing')
+                                    settabname('Add Post');
                                     // props.navigation.navigate("Tracking")
                                 }}>
                                 <View style={{ flex: 1, backgroundColor: 'transparent', marginLeft: s(5) }}>
@@ -264,6 +275,7 @@ const User_Dashboard = props => {
                                 onPress={() => {
                                     console.log("working C");
                                     setVisibleTab('Completed')
+                                    settabname('Community');
                                 }}>
                                 <View style={{ flex: 1, backgroundColor: 'transparent', marginLeft: s(5) }}>
                                     {VisibleTab == 'Completed' ?
@@ -305,6 +317,7 @@ const User_Dashboard = props => {
                 </View>
 
             )
+       
         }
         else {
             return <Tracking {...props}
@@ -314,21 +327,21 @@ const User_Dashboard = props => {
     }
     RenderTab = () => {
         if (VisibleTab == 'Requested') {
-          return <Requested {...props}
-          
-          />
+            return <Requested {...props}
+
+            />
         }
         else if (VisibleTab == 'ongoing') {
-          return <Ongoing {...props}
-            
-          />
+            return <Ongoing {...props}
+
+            />
         }
         // } else if (VisibleTab == 'Completed') {
         //   return <Completed {...props}
         //     searchText={searchText}
         //   />
         // }
-      }
+    }
     const NotificationsScreen = ({ navigation }) => {
         return (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -339,45 +352,65 @@ const User_Dashboard = props => {
     }
     const MyDrawer = () => {
         return (
-            <Drawer.Navigator
-                screenOptions={{
-                    drawerStyle: {
-                        backgroundColor: colors.PRIMARY_COLOR,
 
-                    },
-                }}
-                drawerContent={(props) => <CustomDrawerContent {...props} />}
-            >
-                <Drawer.Screen name="Home"
-                    options={{
-                        drawerIcon: ({ focused, size }) => (
-                            <Image
-                                source={require('../../images/home.png')}
-                                style={[styles.icon, { tintColor: colors.WHITE_COLOR }]}
-                            />
-                        )
+            <>
+                <Drawer.Navigator
+
+                    screenOptions={{
+                        drawerStyle: {
+                            backgroundColor: colors.PRIMARY_COLOR,
+
+                        },
                     }}
-                    component={HomeScreen} />
+                    drawerContent={(props) => <CustomDrawerContent {...props} />}
+                >
+                    <Drawer.Screen name={tabname}
+                        options={{
+                            drawerIcon: ({ focused, size }) => (
+                                <Image
+                                    source={require('../../images/home.png')}
+                                    style={[styles.icon, { tintColor: colors.WHITE_COLOR }]}
+                                />
+                            )
+                        }}
+                        component={HomeScreen} />
 
 
-                <Drawer.Screen
-                    name="Tracking"
-                    component={TrackStack}
-                    options={{ headerShown: false }}
+                    <Drawer.Screen
+                        name="Tracking"
+                        component={TrackStack}
+                        options={{ headerShown: false }}
+                    />
+                    <Drawer.Screen
+                        name="DriverDashboardStack"
+                        component={DriverDashboardStack}
+                        options={{ headerShown: false }}
+                    />
+                    
+
+                </Drawer.Navigator>
+                {NotificationVisible && driver?
+                <View style={{position: 'absolute', top: 0, right: 0, margin: s(15) }}>
+                <TouchableOpacity
+                    onPress={() => {
+                        
+                        props.navigation.navigate("NotificationStack")
+                    }}>
+                <Image
+                    source={require('../../images/bell.png')}
+                    style={[styles.icon, { tintColor: colors.TEXT_COLOR}]}
                 />
-                <Drawer.Screen
-                    name="DriverDashboardStack"
-                    component={DriverDashboardStack}
-                    options={{ headerShown: false }}
-                />
-
-            </Drawer.Navigator>
+                </TouchableOpacity>
+                </View>:null}
+            </>
         );
     }
 
     return (
 
-        <NavigationContainer independent={true}>
+        <NavigationContainer independent={true}
+
+        >
             <MyDrawer />
 
 

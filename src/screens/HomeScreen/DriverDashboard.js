@@ -61,6 +61,7 @@ const DriverDashboard = props => {
         React.useCallback(() => {
             console.log("useFocusEffect is working compitancylist>>")
             getCurrentLocation();
+            setloader(false);
             // getCurrentPosition();
             // setloader(true);
             // compitancy_list();

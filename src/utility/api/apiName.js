@@ -19,7 +19,7 @@ export default {
   skill_approval: 'skill-approval?type=true',
   ongoing_skills: 'ongoing',
   skills: 'skills',
-  notification: 'notification',
+  notification: 'notifications',
   refreshToken: 'auth/refresh-token/',
   getExtraConstant: 'constant-data/extra-constants/',
   getPensionAccounts: 'employee/pension-accounts',
