@@ -35,12 +35,14 @@ import GetLocation from 'react-native-get-location';
 
 import fonts from '../../utility/fonts';
 import MapView, { AnimatedRegion } from 'react-native-maps';
+import CustomeDialog from '../../component/UI/CustomeDialog';
 export const mapRef = React.createRef();
 const DriverDashboard = props => {
     const [getloader, setloader] = useState(false);
     const [competencies_list, setcompetencies_list] = React.useState([]);
     const [lat, setlat] = useState('');
     const [long, setlong] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
 
     const [region, setregion] = useState({
         latitude: 22.7242284,
@@ -72,41 +74,41 @@ const DriverDashboard = props => {
     const FireNotification = async () => {
         try {
             const client = await loggedInClient();
-           
+
             const data = {
                 messageToSend: 'Driver Started Session',
                 messageToSendTitle: 'Session Start',
-              };
-              console.log('FireNotification>>',JSON.stringify(data));
+            };
+            console.log('FireNotification>>', JSON.stringify(data));
             client
-                .post(APIName.customer_notification,data)
+                .post(APIName.customer_notification, data)
                 .then(response => {
-                   
+
                     if (response.status == 200) {
                         let data = response.data;
-                       
-                        try {
-                            
-                        console.log('Response data from compitancy_list' + JSON.stringify(data));
 
-                           
+                        try {
+
+                            console.log('Response data from compitancy_list' + JSON.stringify(data));
+
+
 
                         } catch (error) {
                             console.log('Exception' + error.test);
-                           
+
                         }
 
-                       
+
                     } else {
-                        
+
                     }
 
                 })
                 .catch(error => {
                     console.log('error' + error);
-                   
+
                 });
-        } catch {  }
+        } catch { }
     };
     const getAccessToken = async () => {
         try {
@@ -244,25 +246,60 @@ const DriverDashboard = props => {
                 textContent={'Loading...'}
                 textStyle={styles.spinnerTextStyle}
             />
-            <View style={styles.button_confirm}>
-                <TouchableOpacity
-                    onPress={() => {
-                        console.log('only check');
-                        setloader(true)
+            {getloader ?
 
-                        updateLatLong()
-                    }}>
-
-                    <Text
-                        style={{
-                            color: colors.WHITE_COLOR,
-                            fontFamily: fonts('poppinsSemibold'),
+                <View style={styles.button_stop}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            console.log('only check');
+                            setModalVisible(true);
+                           
+                            //props.navigation.goBack();
+                           
                         }}>
-                        {'  Start Session  '}
-                    </Text>
 
-                </TouchableOpacity>
-            </View>
+                        <Text
+                            style={{
+                                color: colors.WHITE_COLOR,
+                                fontFamily: fonts('poppinsSemibold'),
+                            }}>
+                            {'  Stop Session  '}
+                        </Text>
+
+                    </TouchableOpacity>
+                </View>
+                :
+                <View style={styles.button_confirm}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            console.log('only check');
+                            setloader(true)
+
+                            updateLatLong()
+                        }}>
+
+                        <Text
+                            style={{
+                                color: colors.WHITE_COLOR,
+                                fontFamily: fonts('poppinsSemibold'),
+                            }}>
+                            {'  Start Session  '}
+                        </Text>
+
+                    </TouchableOpacity>
+                </View>
+            }
+             <CustomeDialog
+                        visible={modalVisible}
+                        visibleFun={() => setModalVisible(!modalVisible)}
+                        title="Alert"
+                        sub_title="Are you sure .you want to stop session?"
+                        myCallback={(paramOne, paramTwo) => {
+                            console.log('paramOne', paramOne);
+                            setModalVisible(false);
+                            setloader(false);
+                        }}
+                    />
         </View>
 
     );
@@ -284,6 +321,24 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: s(5),
         backgroundColor: colors.PRIMARY_COLOR,
+        borderRadius: s(20),
+        fontSize: s(12),
+        color: colors.WHITE_COLOR,
+        alignContent: 'center',
+        alignSelf: 'center',
+        paddingRight: s(20),
+        paddingLeft: s(20),
+        position: 'absolute',
+        top: 0,
+        marginTop: s(80)
+    },
+    button_stop: {
+        height: s(40),
+        alignItems: 'center',
+        textAlign: 'center',
+        justifyContent: 'center',
+        borderRadius: s(5),
+        backgroundColor: colors.RED,
         borderRadius: s(20),
         fontSize: s(12),
         color: colors.WHITE_COLOR,

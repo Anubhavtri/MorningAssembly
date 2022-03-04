@@ -32,7 +32,7 @@ import loggedInClient from '../../utility/apiAuth/loggedInClient';
 import GetLocation from 'react-native-get-location';
 
 import { Marker } from 'react-native-maps';
-import flagBlueImg from '../../images/suv.png';
+import flagBlueImg from '../../images/car.png';
 import fonts from '../../utility/fonts';
 import MapView, { AnimatedRegion } from 'react-native-maps';
 
@@ -47,22 +47,17 @@ const Tracking = props => {
         latitudeDelta: 19.0826881,
         longitudeDelta: 72.6009781,
     });
-    var markers = [
-        {
-            latitude: 45.65,
-            longitude: -78.90,
-            title: 'Foo Place',
-            subtitle: '1234 Foo Drive'
-        }
-    ];
-    const onRegionChange = (region) => {
-        setregion({ region });
-    }
+    const mapRef = useRef();
+
     useFocusEffect(
         React.useCallback(() => {
             console.log("useFocusEffect is working compitancylist>>")
-            getCurrentLocation();
+            // getCurrentLocation();
             // setloader(true);
+            if (mapRef.current) {
+                // list of _id's must same that has been provided to the identifier props of the Marker
+                mapRef.current.fitToSuppliedMarkers(competencies_list.map(({ item }) => item.lat !== 0 && item.lat !== null));
+            }
             compitancy_list();
 
         }, [])
@@ -81,8 +76,8 @@ const Tracking = props => {
                 const region = {
                     latitude: location.latitude,
                     longitude: location.longitude,
-                    latitudeDelta: 0.0043,
-                    longitudeDelta: 0.0034,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
                 };
                 setregion(region);
             })
@@ -108,6 +103,20 @@ const Tracking = props => {
                             console.log('Response data from compitancy_list' + JSON.stringify(data));
 
                             setcompetencies_list(data);
+                            console.log("dfdf",competencies_list.length);
+                            console.log("dfdf",data.length);
+                            console.log("dkjfkjdkfj>>.",data[0].lat);
+                            if (data.length > 0) {
+                              if(data[0].lat !=null && data[0].long !=null){
+                                const region = {
+                                    latitude: data[0].lat,
+                                    longitude: data[0].long,
+                                    latitudeDelta: 0.01,
+                                    longitudeDelta: 0.01,
+                                };
+                                setregion(region);}
+                            }
+                            console.log("dfdf",region);
 
                         } catch (error) {
                             console.log('Exception' + error.test);
@@ -136,12 +145,15 @@ const Tracking = props => {
 
 
                     }}>
-                    <Image
-                        source={require('../../images/left.png')}
-                        style={{ tintColor: colors.WHITE_COLOR, height: s(24), width: s(24) }}
-                    />
+                    <View style={{ flexDirection: 'row' }}>
+                        <Image
+                            source={require('../../images/left.png')}
+                            style={{ tintColor: colors.WHITE_COLOR, height: s(24), width: s(24) }}
+                        />
+                        <Text style={styles.Title}>Track</Text>
+                    </View>
                 </TouchableOpacity>
-                <Text style={styles.Title}>Track</Text>
+
             </View>
             <MapView
                 style={{ flex: 1 }}
@@ -153,24 +165,28 @@ const Tracking = props => {
                 followUserLocation={true}
                 zoomEnabled={true}
             >
-                {competencies_list.length > 0 &&
-                    competencies_list.map((marker, index) => (
+                {competencies_list?.length > 0 &&
+                    competencies_list.filter((item) => item.lat !== 0 && item.lat !== null).map((marker, index) => (
+
                         <Marker
                             key={index}
                             coordinate={{
-                                latitude: marker.lat,
-                                longitude: marker.long,
+                                latitude: marker?.lat,
+                                longitude: marker?.long,
                             }}
+                            zoomEnabled={true}
+
                             // pinColor={colors.PRIMARY_COLOR}
                             title={'Driver ' + index}
                             description={'' + marker.mobileNo}
-                            image={flagBlueImg}
+                            image={require("./../../images/car.png")}
                         >
-                            
+
                         </Marker>
+
                     ))}
             </MapView>
-
+            {/*   image={flagBlueImg} */}
             <Spinner
                 visible={getloader}
                 textContent={'Loading...'}

@@ -162,7 +162,7 @@ const Home = props => {
                                 source={require('../../images/share.png')}
                                 style={{ height: s(20), width: s(20), }}
                             />
-                            <Text style={{ marginLeft: s(5) }}>0 Share</Text>
+                            <Text style={{ marginLeft: s(5) }}>Share</Text>
                         </View>
                     </View>
 

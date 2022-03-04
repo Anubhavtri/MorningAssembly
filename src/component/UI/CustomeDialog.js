@@ -97,10 +97,15 @@ const CustomeDialog = ({ visible, visibleFun, myCallback, title, sub_title }) =>
               top: 0,
               marginTop: s(10),
             }}>
+              {sub_title.includes('stop session')?<Image
+                            source={require('../../images/warning.png')}
+                            style={{  height: s(40), width: s(40),alignSelf:'center' }}
+                        />:
               <Image
                             source={require('../../images/power-off.png')}
                             style={{ tintColor: colors.PRIMARY_COLOR, height: s(24), width: s(24),alignSelf:'center' }}
                         />
+          }
             {/* <Notify style={{ alignSelf: 'center' }}></Notify> */}
           </View>
         </View>
