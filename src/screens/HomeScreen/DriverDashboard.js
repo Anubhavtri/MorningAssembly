@@ -123,6 +123,32 @@ const DriverDashboard = props => {
             console.log('getAccessToken', 'Error retrieving data');
         }
     };
+    const getschool_code = async () => {
+        try {
+            const retrievedItem = await AsyncStorage.getItem('@school_code');
+            if (retrievedItem !== null) {
+                const item = JSON.parse(retrievedItem);
+                console.log('getAccessToken', 'Error retrieving data' + item);
+                return item;
+            }
+            return null;
+        } catch (error) {
+            console.log('getAccessToken', 'Error retrieving data');
+        }
+    };
+    const getBus_no = async () => {
+        try {
+            const retrievedItem = await AsyncStorage.getItem('@bus_no');
+            if (retrievedItem !== null) {
+                const item = JSON.parse(retrievedItem);
+                console.log('getAccessToken', 'Error retrieving data' + item);
+                return item;
+            }
+            return null;
+        } catch (error) {
+            console.log('getAccessToken', 'Error retrieving data');
+        }
+    };
     const getCurrentLocation = () => {
         GetLocation.getCurrentPosition({
             enableHighAccuracy: true,
@@ -157,6 +183,36 @@ const DriverDashboard = props => {
         console.log('Request new ID system' + JSON.stringify(data));
         client
             .put(APIName.lat_long + '/' + await getAccessToken(), data)
+            .then(response => {
+                if (response.status == 200) {
+                    let data = response.data;
+                    try {
+                        console.log(
+                            'Response data from assesmentlist_skill' + JSON.stringify(data),
+                        );
+                        FireNotification()
+                    } catch (error) {
+                        console.log('Exception' + error.test);
+                    }
+
+                }
+
+            })
+            .catch(error => {
+                console.log('error' + error);
+                setloader(false);
+            });
+    };
+    const DriverStartSession = async (sStatus, cStatus) => {
+        const client = await loggedInClient();
+        const data = {
+            school_code: await getschool_code(),
+            bus_number: await getBus_no(),
+
+        };
+        console.log('Request new ID system' + JSON.stringify(data));
+        client
+            .post(APIName.driver_session_notificaion , data)
             .then(response => {
                 if (response.status == 200) {
                     let data = response.data;
@@ -276,6 +332,7 @@ const DriverDashboard = props => {
                             setloader(true)
 
                             updateLatLong()
+                            DriverStartSession();
                         }}>
 
                         <Text

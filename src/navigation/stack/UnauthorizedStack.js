@@ -5,7 +5,7 @@ import splash from '../../screens/Splash'
 
  import OtpVerification from '../../screens/Authentication_screens/OtpVerification'
 // import OTP from '../../screens/Authentication_screens/OtpScreens'
-// import Reset from '../../screens/Authentication_screens/ResetPassword'
+ import SignUp from '../../screens/Authentication_screens/SignUp'
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 const Stack = createNativeStackNavigator();
@@ -25,7 +25,7 @@ const UnauthorizedStack = () => {
             <Stack.Screen name="SelectType" component={SelectUserType} options={{ headerShown: false }} />
              <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
            <Stack.Screen name="OTP" component={OtpVerification} options={{ headerShown: false }} />
-           {/*  <Stack.Screen name="Reset" component={Reset} options={{ headerShown: false }} /> */}
+            <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} /> 
         </Stack.Navigator>
     )
 }

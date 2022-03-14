@@ -1,6 +1,6 @@
 export default {
   login: 'login',
-  forgot_pwd: 'reset-pwd-mail',
+  register: 'register',
   browse_skills: 'browseskill',
   dashboard: 'dashboard',
   badge_count: 'tabs/notifications/count',
@@ -94,6 +94,7 @@ export default {
   createPensionMultiple: 'employee/pension-accounts/private/multiple-create',
   drivers: 'drivers',
   lat_long: 'lat-long',
+  driver_session_notificaion:'driver-session-notificaion',
   customer_notification: 'customer-notification',
 
 

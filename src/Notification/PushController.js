@@ -4,7 +4,7 @@ import {
   Platform,
 } from 'react-native';
 import PushNotification from "react-native-push-notification";
-import PushNotificationIOS from "@react-native-community/push-notification-ios";
+//import PushNotificationIOS from "@react-native-community/push-notification-ios";
 // var PushNotification = require("react-native-push-notification");
 import messaging from '@react-native-firebase/messaging';
 import Navigation from '../navigation';
@@ -44,7 +44,7 @@ export default class PushController extends Component {
         // required on iOS only 
         if (Platform.OS === 'android') {}
         else {
-          notification.finish(PushNotificationIOS.FetchResult.NoData);
+        //  notification.finish(PushNotificationIOS.FetchResult.NoData);
         }
 
        

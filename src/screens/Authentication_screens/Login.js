@@ -36,77 +36,79 @@ import GetLocation from 'react-native-get-location';
 const Login = props => {
     const [getloader, setloader] = useState(false);
     const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [DeviceToken, setDeviceToken] = useState('');
+    const [hidePass, setHidePass] = useState(true);
 
-   
     useEffect(() => {
         console.log('This will login!');
-         
+
         getCurrentLocation();
         checkFirebaseToken();
-    
-      }, []);
-     
-      const checkFirebaseToken = async () => {
+
+    }, []);
+
+    const checkFirebaseToken = async () => {
         try {
-          const regToken = await messaging().getToken();
-          console.log('token!-------------', regToken);
-          setDeviceToken(regToken);
-         // StoreDeviceToken(regToken);
-          return regToken;
+            const regToken = await messaging().getToken();
+            console.log('token!-------------', regToken);
+            setDeviceToken(regToken);
+            // StoreDeviceToken(regToken);
+            return regToken;
         } catch (error) {
-          console.log('error-------------', error);
+            console.log('error-------------', error);
         }
-      };
-      const loginHandler = async (mobile) => {
+    };
+    const loginHandler = async (mobile) => {
         if (!(await NetworkUtils.isNetworkAvailable())) {
-          setloader(false);
-          notifyMessage(
-            'No Internet Connection! You are offline please check your internet connection',
-          );
-          return;
+            setloader(false);
+            notifyMessage(
+                'No Internet Connection! You are offline please check your internet connection',
+            );
+            return;
         } else {
-          /* this.showLoader(); */
-          var data = {
-            mobileNo: mobile,
-            role: props?.route?.params?.type,
-            device_token:DeviceToken,
-            platform:Platform.OS
-          };
-          console.log('request', '' + JSON.stringify(data));
-          const lient = await loginRequest();
-          lient
-            .post(APIName.login, data)
-            .then(response => {
-              console.log('Response data from axios' + JSON.stringify(response));
-              try {
-                setloader(false);
-                storeData(props?.route?.params?.type);
-                storeUserData(response.data.data._id);
-                props.navigation.navigate('OTP', { name: 'Jane 123456789' })
-                //props.navigation.replace('Authorized', { name: 'Jane 123456789' });
-              } catch (error) {
-                console.log('Exception' + error.test);
-              }
-    
-              setloader(false);
-              setresponse(response.data.response);
-              //getData();
-              /*   props.navigation.navigate('Dashboard', { name: 'Jane 123456789' }); */
-            })
-            .catch(error => {
-              setloader(false);
-              console.log('Response ' + JSON.stringify(error.response.data));
-              console.log('Response ' + JSON.stringify(error.response.data.status));
-              console.log(
-                'Interceptor Error>>',
-                JSON.stringify(error.response.data.message),
-              );
-              notifyMessage('' + error?.response?.data?.message);
-            });
+            /* this.showLoader(); */
+            var data = {
+                mobileNo: mobile,
+                password:password,
+                role: props?.route?.params?.type,
+                device_token: DeviceToken,
+                platform: Platform.OS
+            };
+            console.log('request', '' + JSON.stringify(data));
+            const lient = await loginRequest();
+            lient
+                .post(APIName.login, data)
+                .then(response => {
+                    console.log('Response data from axios' + JSON.stringify(response));
+                    try {
+                        setloader(false);
+                        storeData(props?.route?.params?.type);
+                        storeUserData(response.data.data.id,response.data.data.school_code,response.data.data.bus_number,response.data.data.access_token);
+                        props.navigation.navigate('OTP', { name: 'Jane 123456789' })
+                        //props.navigation.replace('Authorized', { name: 'Jane 123456789' });
+                    } catch (error) {
+                        console.log('Exception' + error.test);
+                    }
+
+                    setloader(false);
+                    setresponse(response.data.response);
+                    //getData();
+                    /*   props.navigation.navigate('Dashboard', { name: 'Jane 123456789' }); */
+                })
+                .catch(error => {
+                    setloader(false);
+                    console.log('Response ' + JSON.stringify(error.response.data));
+                    console.log('Response ' + JSON.stringify(error.response.data.status));
+                    console.log(
+                        'Interceptor Error>>',
+                        JSON.stringify(error.response.data.message),
+                    );
+                    notifyMessage('' + error?.response?.data?.message);
+                });
         }
-      };
-   
+    };
+
     const getCurrentLocation = () => {
         GetLocation.getCurrentPosition({
             enableHighAccuracy: true,
@@ -127,10 +129,6 @@ const Login = props => {
     return (
 
         <View style={styles.container}>
-
-
-
-
             <Image
                 style={{
                     resizeMode: 'stretch',
@@ -170,6 +168,96 @@ const Login = props => {
                     />
                 </View>
             </View>
+            <View style={{ flexDirection: 'row', margin: s(10) }}>
+
+                <View style={{ borderTopLeftRadius: s(5), borderBottomLeftRadius: s(5), borderTopRightRadius: s(5), borderBottomRightRadius: s(5), borderWidth: s(0.5), borderLeftWidth: s(0.5), borderColor: colors.WHITE_COLOR, flex: 4 }}>
+                    <TextInput
+                        theme={{ colors: { primary: colors.WHITE_COLOR } }}
+                        style={styles.input}
+                        placeholder='Password'
+                        placeholderTextColor={colors.WHITE_COLOR}
+                        fontFamily={fonts('poppinsRegular')}
+                        mode="outlined"
+                        password={true}
+                        secureTextEntry={hidePass ? true : false}
+                        returnKeyType={'next'}
+                        outlineColor={colors.WHITE_COLOR}
+                        selectionColor='transparent'
+                        underlineColor='transparent'
+                        underlineColorAndroid='transparent'
+                        value={password}
+                        onChangeText={text => setPassword(text)}
+                        keyboardType="text"
+
+
+                    />
+                </View>
+
+                <View
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        bottom: 0,
+                        right: 0,
+                        justifyContent: 'center',
+                        flex: 1
+
+                    }}>
+                    {hidePass == true ? (
+                        <TouchableOpacity
+                            onPress={() => {
+                                console.log('click');
+                                setHidePass(false);
+                            }}>
+                            <View style={{ height: s(50), width: s(40), alignSelf: 'center', justifyContent: 'center' }}>
+                                {/* <Disable_eye_Icon
+                    style={{ marginRight: s(20), marginTop: s(5), alignSelf: 'center', alignContent: 'center' }}
+
+                /> */}
+
+                                <Image
+                                    style={{
+                                        height: s(20), width: s(30),
+                                        marginRight: s(20), marginTop: s(5), alignSelf: 'center', alignContent: 'center'
+                                    }}
+                                    source={require('../../images/Active_eye_icon.png')} />
+                            </View>
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity
+                            onPress={() => {
+                                console.log('click');
+                                setHidePass(true);
+                            }}>
+                            <View style={{ height: s(50), width: s(40), alignSelf: 'center', justifyContent: 'center' }}>
+
+                                {/* <Active_eye_Icon
+                    style={{ marginRight: s(20), marginTop: s(5), alignSelf: 'center', alignContent: 'center' }}
+
+                /> */}
+                                <Image
+                                    style={{
+                                        height: s(20), width: s(30), marginRight: s(20), marginTop: s(5),
+                                        alignSelf: 'center', alignContent: 'center'
+                                    }}
+
+                                    source={require('../../images/Disable_eye_icon.png')} />
+
+                            </View>
+                        </TouchableOpacity>
+                    )}
+                </View>
+            </View>
+
+            <View style={styles.sign_up_view}>
+                <Text style={styles.sign_up}>Don't have an account ?</Text>
+                <TouchableOpacity
+                    onPress={() => {
+                        props.navigation.navigate('SignUp', { type: props?.route?.params?.type })
+                    }}>
+                    <Text style={{ color: colors.WHITE_COLOR, fontSize: s(12), fontFamily: fonts('poppinsBold'), }}>Sign Up</Text>
+                </TouchableOpacity>
+            </View>
 
 
 
@@ -184,18 +272,18 @@ const Login = props => {
                 onPress={() => {
                     console.log('Login_button+++');
                     //props.navigation.navigate('OTP', { name: 'Jane 123456789' })
-                   
 
-                    if (email != '' && email.length==10) {
+
+                    if (email != '' && email.length == 10) {
                         setloader(true);
                         loginHandler(email);
-                      } else {
+                    } else {
                         console.log('if is not working');
                         // notifyMessage('field is not Empty !')
                         notifyMessage('Incorrect Mobile Number !');
                         //ErrorMessage.notifyMessage(Constant.app_name)
-        
-                      }
+
+                    }
 
                 }}
             />
@@ -250,6 +338,25 @@ const styles = StyleSheet.create({
         marginLeft: s(20),
         marginTop: s(20),
         alignSelf: 'center',
+    },
+    sign_up: {
+        fontSize: s(12),
+        color: colors.PRIMARY_COLOR,
+        fontFamily: fonts('poppinsBold'),
+        textAlign: 'left',
+        alignSelf: 'flex-end',
+        marginRight: s(5)
+    },
+    sign_up_view: {
+        fontSize: s(12),
+        color: colors.PRIMARY_COLOR,
+        fontFamily: fonts('poppinsBold'),
+        textAlign: 'left',
+        alignSelf: 'flex-end',
+        marginRight: s(20),
+        flexDirection: 'row',
+        marginTop: s(10),
+        marginBottom: s(10)
     },
 
     button: {
@@ -318,10 +425,19 @@ const storeData = async value => {
         // saving error
     }
 };
-const storeUserData = async value => {
+const storeUserData = async (value,School_code,Bus_no,Storage_Key) => {
     try {
         const jsonValue = JSON.stringify(value);
+        const school_code = JSON.stringify(School_code);
+        const bus_no = JSON.stringify(Bus_no);
+        const storage_Key = JSON.stringify(Storage_Key);
+
+
         await AsyncStorage.setItem('@user_id', jsonValue);
+        await AsyncStorage.setItem('@school_code', school_code);
+        await AsyncStorage.setItem('@bus_no', bus_no);
+        await AsyncStorage.setItem('@storage_Key', storage_Key);
+
     } catch (e) {
         // saving error
     }
