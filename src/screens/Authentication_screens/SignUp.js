@@ -98,7 +98,8 @@ const SignUp = props => {
                         setloader(false);
                         storeData(props?.route?.params?.type);
                         storeUserData(response.data.data.id,response.data.data.school_code,response.data.data.bus_number,response.data.data.access_token);
-                       // props.navigation.navigate('OTP', { name: 'Jane 123456789' })
+                        notifyMessage('Successfully SignUp !' );
+                        // props.navigation.navigate('OTP', { name: 'Jane 123456789' })
                         props.navigation.replace('Authorized', { name: 'Jane 123456789' })
                         //props.navigation.replace('Authorized', { name: 'Jane 123456789' });
                     } catch (error) {
@@ -106,7 +107,6 @@ const SignUp = props => {
                     }
 
                     setloader(false);
-                    setresponse(response.data.response);
                     //getData();
                     /*   props.navigation.navigate('Dashboard', { name: 'Jane 123456789' }); */
                 })
