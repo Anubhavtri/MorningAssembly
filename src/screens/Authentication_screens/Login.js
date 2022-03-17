@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 
 import {
     Alert,
@@ -39,7 +39,7 @@ const Login = props => {
     const [password, setPassword] = useState('');
     const [DeviceToken, setDeviceToken] = useState('');
     const [hidePass, setHidePass] = useState(true);
-
+    const ref_input2 = useRef();
     useEffect(() => {
         console.log('This will login!');
 
@@ -53,7 +53,7 @@ const Login = props => {
             const regToken = await messaging().getToken();
             console.log('token!-------------', regToken);
             setDeviceToken(regToken);
-            // StoreDeviceToken(regToken);
+             StoreDeviceToken(regToken);
             return regToken;
         } catch (error) {
             console.log('error-------------', error);
@@ -85,14 +85,15 @@ const Login = props => {
                         setloader(false);
                         storeData(props?.route?.params?.type);
                         storeUserData(response.data.data.id,response.data.data.school_code,response.data.data.bus_number,response.data.data.access_token);
-                        props.navigation.navigate('OTP', { name: 'Jane 123456789' })
+                        //props.navigation.navigate('OTP', { name: 'Jane 123456789' })
+                        notifyMessage('Successfully SignIn !' );
+                        props.navigation.replace('Authorized', { name: 'Jane 123456789' })
                         //props.navigation.replace('Authorized', { name: 'Jane 123456789' });
                     } catch (error) {
                         console.log('Exception' + error.test);
                     }
 
                     setloader(false);
-                    setresponse(response.data.response);
                     //getData();
                     /*   props.navigation.navigate('Dashboard', { name: 'Jane 123456789' }); */
                 })
@@ -155,7 +156,7 @@ const Login = props => {
                         placeholderTextColor={colors.WHITE_COLOR}
                         fontFamily={fonts('poppinsRegular')}
                         mode="outlined"
-                        returnKeyType={'done'}
+                        returnKeyType={'next'}
                         outlineColor={colors.WHITE_COLOR}
                         selectionColor='transparent'
                         underlineColor='transparent'
@@ -163,7 +164,7 @@ const Login = props => {
                         value={email}
                         onChangeText={text => setEmail(text)}
                         keyboardType="numeric"
-
+                        onSubmitEditing={() => ref_input2.current.focus()}
 
                     />
                 </View>
@@ -180,7 +181,7 @@ const Login = props => {
                         mode="outlined"
                         password={true}
                         secureTextEntry={hidePass ? true : false}
-                        returnKeyType={'next'}
+                        returnKeyType={'done'}
                         outlineColor={colors.WHITE_COLOR}
                         selectionColor='transparent'
                         underlineColor='transparent'
@@ -188,7 +189,7 @@ const Login = props => {
                         value={password}
                         onChangeText={text => setPassword(text)}
                         keyboardType="text"
-
+                        ref={ref_input2}
 
                     />
                 </View>
@@ -427,19 +428,22 @@ const storeData = async value => {
 };
 const storeUserData = async (value,School_code,Bus_no,Storage_Key) => {
     try {
-        const jsonValue = JSON.stringify(value);
-        const school_code = JSON.stringify(School_code);
-        const bus_no = JSON.stringify(Bus_no);
-        const storage_Key = JSON.stringify(Storage_Key);
-
-
-        await AsyncStorage.setItem('@user_id', jsonValue);
-        await AsyncStorage.setItem('@school_code', school_code);
-        await AsyncStorage.setItem('@bus_no', bus_no);
-        await AsyncStorage.setItem('@storage_Key', storage_Key);
+        await AsyncStorage.setItem('@user_id', value);
+        await AsyncStorage.setItem('@school_code', School_code);
+        await AsyncStorage.setItem('@bus_no', Bus_no);
+        await AsyncStorage.setItem('@access_token','Bearer ' + Storage_Key);
 
     } catch (e) {
         // saving error
     }
 };
+const StoreDeviceToken = async token => {
+    try {
+      //const jsonValue = JSON.stringify(token);
+      await AsyncStorage.setItem('@deviceToken', token);
+    } catch (e) {
+      // saving error
+      console.log('error>>>', JSON.stringify(e));
+    }
+  };
 export default Login;

@@ -56,7 +56,7 @@ const SelectUserType = props => {
             }}
           />
           <Button
-            title={'User'}
+            title={'Parent'}
             onPress={() => {
               console.log('Login_button+++');
               props.navigation.navigate('Login',{type:'1'});

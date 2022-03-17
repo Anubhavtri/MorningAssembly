@@ -38,7 +38,7 @@ import MapView, { AnimatedRegion } from 'react-native-maps';
 
 const Tracking = props => {
     const [getloader, setloader] = useState(false);
-    const [competencies_list, setcompetencies_list] = React.useState([]);
+    const [competencies_list, setcompetencies_list] = React.useState({});
     const [lat, setlat] = useState('');
     const [long, setlong] = useState('');
     const [region, setregion] = useState({
@@ -86,13 +86,36 @@ const Tracking = props => {
                 console.warn(code, message);
             })
     }
-
+    const getschool_code = async () => {
+        try {
+            const retrievedItem = await AsyncStorage.getItem('@school_code');
+            if (retrievedItem !== null) {
+                const item = JSON.parse(retrievedItem);
+                return item;
+            }
+            return null;
+        } catch (error) {
+            console.log('getAccessToken', 'Error retrieving data');
+        }
+    };
+    const getBus_no = async () => {
+        try {
+            const retrievedItem = await AsyncStorage.getItem('@bus_no');
+            if (retrievedItem !== null) {
+                const item = JSON.parse(retrievedItem);
+                return item;
+            }
+            return null;
+        } catch (error) {
+            console.log('getAccessToken', 'Error retrieving data');
+        }
+    };
     const compitancy_list = async () => {
         try {
             const client = await loggedInClient();
-            console.log('APIName.drivers>>', APIName.drivers);
+            console.log('APIName.drivers>>', APIName.tracking+'?school_code='+await getschool_code()+'&bus_number='+await getBus_no());
             client
-                .get(APIName.drivers)
+                .get(APIName.tracking+'?school_code='+await getschool_code()+'&bus_number='+await getBus_no())
                 .then(response => {
                     setloader(false);
                     if (response.status == 200) {
@@ -103,19 +126,17 @@ const Tracking = props => {
                             console.log('Response data from compitancy_list' + JSON.stringify(data));
 
                             setcompetencies_list(data);
-                            console.log("dfdf",competencies_list.length);
-                            console.log("dfdf",data.length);
-                            console.log("dkjfkjdkfj>>.",data[0].lat);
-                            if (data.length > 0) {
-                              if(data[0].lat !=null && data[0].long !=null){
+                           
+                            
+                             
                                 const region = {
-                                    latitude: data[0].lat,
-                                    longitude: data[0].long,
+                                    latitude: data.lat,
+                                    longitude: data.long,
                                     latitudeDelta: 0.01,
                                     longitudeDelta: 0.01,
                                 };
-                                setregion(region);}
-                            }
+                                setregion(region);
+                            
                             console.log("dfdf",region);
 
                         } catch (error) {
@@ -133,7 +154,10 @@ const Tracking = props => {
                     console.log('error' + error);
                     setloader(false);
                 });
-        } catch { setloader(false); }
+        } catch (error){ 
+            console.log("catch is working >>>>",JSON.stringify(error));
+            setloader(false);
+         }
     };
     return (
 
@@ -165,26 +189,21 @@ const Tracking = props => {
                 followUserLocation={true}
                 zoomEnabled={true}
             >
-                {competencies_list?.length > 0 &&
-                    competencies_list.filter((item) => item.lat !== 0 && item.lat !== null).map((marker, index) => (
-
+                {/* {competencies_list?.length > 0 &&
+                    competencies_list.filter((item) => item.lat !== 0 && item.lat !== null).map((marker, index) => ( */}
+                 {competencies_list.lat!=null?
                         <Marker
-                            key={index}
-                            coordinate={{
-                                latitude: marker?.lat,
-                                longitude: marker?.long,
-                            }}
+                            coordinate={region}
                             zoomEnabled={true}
-
                             // pinColor={colors.PRIMARY_COLOR}
-                            title={'Driver ' + index}
-                            description={'' + marker.mobileNo}
+                            title={'Driver ' }
+                            description={'' }
                             image={require("./../../images/car.png")}
                         >
 
-                        </Marker>
+                        </Marker>:getCurrentLocation()}
 
-                    ))}
+                    {/* ))} */}
             </MapView>
             {/*   image={flagBlueImg} */}
             <Spinner

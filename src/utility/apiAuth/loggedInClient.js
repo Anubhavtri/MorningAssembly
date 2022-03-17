@@ -9,14 +9,11 @@ import Spinner from 'react-native-loading-spinner-overlay';
 
 const getAccessToken = async () => {
   try {
-    const retrievedItem = await AsyncStorage.getItem('@storage_Key');
+    const retrievedItem = await AsyncStorage.getItem('@access_token');
     if (retrievedItem !== null) {
-      // console.log('getAccessToken', 'Error retrieving data'+retrievedItem);
-      const item = JSON.parse(retrievedItem);
-      // const accessToken = `Bearer ${item.access_token}`;
-      const accessToken = item.accessToken;
-      console.log('getAccessToken', 'Error retrieving data' + accessToken);
-      return accessToken;
+       console.log('getAccessToken', 'Error retrieving data'+retrievedItem);
+     
+      return retrievedItem;
     }
     return null;
   } catch (error) {
@@ -79,7 +76,7 @@ const checkFirebaseToken = async () => {
 
 const getSavedData = async () => {
   try {
-    const retrievedItem = await AsyncStorage.getItem('@storage_Key');
+    const retrievedItem = await AsyncStorage.getItem('@access_token');
     if (retrievedItem !== null) {
       return retrievedItem;
     }
@@ -106,9 +103,9 @@ const loginClient = axios.create({
 });
 
 const getLoginClient = async () => {
-  // loginClient.defaults.headers.common.Authorization = await getAccessToken();
-  // loginClient.defaults.headers['device_token'] = await checkFirebaseToken();
-  // loginClient.defaults.headers['platform'] = Platform.OS;
+   loginClient.defaults.headers.common.Authorization = await getAccessToken();
+  //  loginClient.defaults.headers['device_token'] = await checkFirebaseToken();
+  //  loginClient.defaults.headers['platform'] = Platform.OS;
 
   return loginClient;
 };
@@ -125,7 +122,7 @@ const callRefreshToken = async config => {
       };
 
       let response = await axios.post(
-        apiConfig.baseUrl + 'auth/refresh-token/',
+        apiConfig.baseUrl + '/refresh-token/',
         data,
         {timeout: 5000}
       );
@@ -188,14 +185,17 @@ loginClient.interceptors.response.use(
     console.log('Interceptor Response', response.status);
     // console.log('Interceptor Response', response.data);
     try {
-      if (response.status === 401) {
-        let res = await callRefreshToken(response.config);
+      console.log('Interceptor Response', response.status);
 
-        return res;
+      if (response.status === 401) {
+       let res = await callRefreshToken(response.config);
+
+       return res;
       } else {
         return response;
       }
     } catch (err) {
+      console.log('Interceptor Response', JSON.stringify(err));
       if (err.isRefreshFail) {
         clearAsyncStorage();
       } else {
@@ -206,7 +206,7 @@ loginClient.interceptors.response.use(
   async error => {
     //console.log('Interceptor Error', error.response);
     // console.log('Interceptor Error', error.response.status);
-    // console.log('Interceptor Error', error.response.data);
+     // console.log('Interceptor Error', JSON.stringify(error));
     try {
       if (error.response.status === 401) {
         const res = await callRefreshToken(error.response.config);

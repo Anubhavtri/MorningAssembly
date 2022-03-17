@@ -195,7 +195,8 @@ const User_Dashboard = props => {
             AsyncStorage.clear()
             console.log('try after  working');
             setModalVisible(false);
-            RootNavigation.navigate('Unauthorized', { screen: 'Login' });
+            RootNavigation.resetRoot('Unauthorized', {screen: 'Login'});
+           // RootNavigation.navigate('Unauthorized', { screen: 'Login' });
         } catch (e) {
             console.log('async clear error', e);
         }

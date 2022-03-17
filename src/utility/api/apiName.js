@@ -94,6 +94,8 @@ export default {
   createPensionMultiple: 'employee/pension-accounts/private/multiple-create',
   drivers: 'drivers',
   lat_long: 'lat-long',
+  tracking: 'tracking',
+
   driver_session_notificaion:'driver-session-notificaion',
   customer_notification: 'customer-notification',
 

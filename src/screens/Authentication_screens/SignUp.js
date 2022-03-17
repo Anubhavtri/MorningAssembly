@@ -60,7 +60,7 @@ const SignUp = props => {
             const regToken = await messaging().getToken();
             console.log('token!-------------', regToken);
             setDeviceToken(regToken);
-            // StoreDeviceToken(regToken);
+             StoreDeviceToken(regToken);
             return regToken;
         } catch (error) {
             console.log('error-------------', error);
@@ -76,6 +76,7 @@ const SignUp = props => {
         } else {
             /* this.showLoader(); */
             var data = {
+                name:name,
                 mobileNo: mobile,
                 password: password,
                 role: props?.route?.params?.type,
@@ -97,7 +98,8 @@ const SignUp = props => {
                         setloader(false);
                         storeData(props?.route?.params?.type);
                         storeUserData(response.data.data.id,response.data.data.school_code,response.data.data.bus_number,response.data.data.access_token);
-                        props.navigation.navigate('OTP', { name: 'Jane 123456789' })
+                       // props.navigation.navigate('OTP', { name: 'Jane 123456789' })
+                        props.navigation.replace('Authorized', { name: 'Jane 123456789' })
                         //props.navigation.replace('Authorized', { name: 'Jane 123456789' });
                     } catch (error) {
                         console.log('Exception' + error.test);
@@ -320,7 +322,7 @@ const SignUp = props => {
                                     placeholderTextColor={colors.WHITE_COLOR}
                                     fontFamily={fonts('poppinsRegular')}
                                     mode="outlined"
-                                    returnKeyType={'next'}
+                                    returnKeyType={'done'}
                                     outlineColor={colors.WHITE_COLOR}
                                     selectionColor='transparent'
                                     underlineColor='transparent'
@@ -492,6 +494,7 @@ function notifyMessage(msg) {
         alert(msg);
     }
 }
+
 const storeData = async value => {
     try {
         await AsyncStorage.setItem('@storage_Key', value);
@@ -501,19 +504,24 @@ const storeData = async value => {
 };
 const storeUserData = async (value,School_code,Bus_no,Storage_Key) => {
     try {
-        const jsonValue = JSON.stringify(value);
-        const school_code = JSON.stringify(School_code);
-        const bus_no = JSON.stringify(Bus_no);
-        const storage_Key = JSON.stringify(Storage_Key);
-
-
-        await AsyncStorage.setItem('@user_id', jsonValue);
-        await AsyncStorage.setItem('@school_code', school_code);
-        await AsyncStorage.setItem('@bus_no', bus_no);
-        await AsyncStorage.setItem('@storage_Key', storage_Key);
+        await AsyncStorage.setItem('@user_id', value);
+        await AsyncStorage.setItem('@school_code', School_code);
+        await AsyncStorage.setItem('@bus_no', Bus_no);
+        await AsyncStorage.setItem('@access_token','Bearer ' + Storage_Key);
 
     } catch (e) {
         // saving error
     }
 };
+const StoreDeviceToken = async token => {
+    try {
+      //const jsonValue = JSON.stringify(token);
+      console.log('StoreDeviceToken>>', token);
+      await AsyncStorage.setItem('@deviceToken', token);
+      console.log('StoreDeviceToken>> after store', token);
+    } catch (e) {
+      // saving error
+      console.log('error>>>', JSON.stringify(e));
+    }
+  };
 export default SignUp;

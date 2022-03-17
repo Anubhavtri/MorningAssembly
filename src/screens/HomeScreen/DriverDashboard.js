@@ -78,6 +78,8 @@ const DriverDashboard = props => {
             const data = {
                 messageToSend: 'Driver Started Session',
                 messageToSendTitle: 'Session Start',
+                school_code: await getschool_code(),
+                bus_number: await getBus_no(),
             };
             console.log('FireNotification>>', JSON.stringify(data));
             client
@@ -208,6 +210,8 @@ const DriverDashboard = props => {
         const data = {
             school_code: await getschool_code(),
             bus_number: await getBus_no(),
+            lat: lat,
+            long: long,
 
         };
         console.log('Request new ID system' + JSON.stringify(data));
@@ -229,7 +233,7 @@ const DriverDashboard = props => {
 
             })
             .catch(error => {
-                console.log('error' + error);
+                console.log('error>>>>>' + error);
                 setloader(false);
             });
     };
@@ -331,7 +335,7 @@ const DriverDashboard = props => {
                             console.log('only check');
                             setloader(true)
 
-                            updateLatLong()
+                           // updateLatLong()
                             DriverStartSession();
                         }}>
 
