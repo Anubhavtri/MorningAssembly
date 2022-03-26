@@ -29,27 +29,33 @@ import loginRequest from '../../utility/apiAuth/tokenClient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PushNotification from 'react-native-push-notification';
 import messaging from '@react-native-firebase/messaging';
-// import Disable_eye_Icon from '../../images/Disable eye icon.svg';
-// import Active_eye_Icon from '../../images/Active eye icon .svg';
 import fonts from '../../utility/fonts';
 import GetLocation from 'react-native-get-location';
+import SchoollistDialog from '../../component/UI/SchoollistDialog';
+import SchoolVehiclelistDialog from '../../component/UI/SchoolVehicleDialog';
 
 const SignUp = props => {
     const [getloader, setloader] = useState(false);
     const [name, setName] = useState('');
     const [mobile, setMobile] = useState('');
     const [password, setPassword] = useState('');
-    const [bus_no, setBus_no] = useState('');
-    const [school_code, setSchool_Code] = useState('');
+    const [bus_no, setBus_no] = useState('Bus No.');
+    const [school_code, setSchool_Code] = useState('School Code');
     const [lat, setlat] = useState('');
     const [long, setlong] = useState('');
     const [DeviceToken, setDeviceToken] = useState('');
     const [hidePass, setHidePass] = useState(true);
+    const [schoollist, setschoollist] = React.useState([]);
+    const [vehiclelist, setvehiclelist] = React.useState([]);
+
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalVehicleVisible, setModalVehicleVisible] = useState(false);
+
 
 
     useEffect(() => {
         console.log('This will login!');
-
+        school_list();
         getCurrentLocation();
         checkFirebaseToken();
 
@@ -60,7 +66,7 @@ const SignUp = props => {
             const regToken = await messaging().getToken();
             console.log('token!-------------', regToken);
             setDeviceToken(regToken);
-             StoreDeviceToken(regToken);
+            StoreDeviceToken(regToken);
             return regToken;
         } catch (error) {
             console.log('error-------------', error);
@@ -76,7 +82,7 @@ const SignUp = props => {
         } else {
             /* this.showLoader(); */
             var data = {
-                name:name,
+                name: name,
                 mobileNo: mobile,
                 password: password,
                 role: props?.route?.params?.type,
@@ -97,8 +103,8 @@ const SignUp = props => {
                         console.log('Response data from axios', JSON.stringify(response.data));
                         setloader(false);
                         storeData(props?.route?.params?.type);
-                        storeUserData(response.data.data.id,response.data.data.school_code,response.data.data.bus_number,response.data.data.access_token);
-                        notifyMessage('Successfully SignUp !' );
+                        storeUserData(response.data.data.id, response.data.data.school_code, response.data.data.bus_number, response.data.data.access_token);
+                        notifyMessage('Successfully SignUp !');
                         // props.navigation.navigate('OTP', { name: 'Jane 123456789' })
                         props.navigation.replace('Authorized', { name: 'Jane 123456789' })
                         //props.navigation.replace('Authorized', { name: 'Jane 123456789' });
@@ -134,7 +140,77 @@ const SignUp = props => {
                 console.warn(code, message);
             })
     }
+    const school_list = async () => {
+        try {
+            // const client = await loggedInClient();
+            const client = await loginRequest();
+            console.log('APIName.drivers>>', APIName.schools);
+            client
+                .get(APIName.schools)
+                .then(response => {
+                    setloader(false);
+                    if (response.status == 200) {
+                        let data = response.data.data;
+                        setloader(false);
+                        try {
+                            setloader(false)
+                            console.log('Response data from compitancy_list' + JSON.stringify(data));
+                            setschoollist(data);
+                        } catch (error) {
+                            console.log('Exception' + error.test);
+                            setloader(false)
+                        }
 
+                        setloader(false);
+                    } else {
+                        setloader(false);
+                    }
+
+                })
+                .catch(error => {
+                    console.log('error' + error);
+                    setloader(false);
+                });
+        } catch (error) {
+            console.log("catch is working >>>>", JSON.stringify(error));
+            setloader(false);
+        }
+    };
+    const bus_list = async (id) => {
+        try {
+            // const client = await loggedInClient();
+            const client = await loginRequest();
+            console.log('APIName.drivers>>', APIName.school_vehicals+'?school_id='+id);
+            client.get(APIName.school_vehicals+'?school_id='+id)
+                .then(response => {
+                    setloader(false);
+                    if (response.status == 200) {
+                        let data = response.data.data;
+                        setloader(false);
+                        try {
+                            setloader(false)
+                            console.log('Response data from bus_list' + JSON.stringify(data));
+                            setvehiclelist(data);
+                        } catch (error) {
+                            console.log('Exception' + error.test);
+                            setloader(false)
+                        }
+
+                        setloader(false);
+                    } else {
+                        setloader(false);
+                    }
+
+                })
+                .catch(error => {
+                    console.log('error' + error);
+                    setloader(false);
+                });
+        } catch (error) {
+            console.log("catch is working >>>>", JSON.stringify(error));
+            setloader(false);
+        }
+    };
     // //
     return (
         <SafeAreaView style={styles.container}>
@@ -255,11 +331,11 @@ const SignUp = props => {
                                                 style={{ marginRight: s(20), marginTop: s(5), alignSelf: 'center', alignContent: 'center' }}
 
                                             /> */}
-                                           
-                                                <Image
+
+                                            <Image
                                                 style={{
                                                     height: s(20), width: s(30),
-                                                    marginRight: s(20), marginTop: s(5) ,alignSelf:'center',alignContent:'center'
+                                                    marginRight: s(20), marginTop: s(5), alignSelf: 'center', alignContent: 'center'
                                                 }}
                                                 source={require('../../images/Active_eye_icon.png')} />
                                         </View>
@@ -276,13 +352,14 @@ const SignUp = props => {
                                                 style={{ marginRight: s(20), marginTop: s(5), alignSelf: 'center', alignContent: 'center' }}
 
                                             /> */}
-                                             <Image
-                                                style={{height: s(20), width: s(30),marginRight: s(20), marginTop: s(5) ,
-                                                    alignSelf:'center',alignContent:'center'
+                                            <Image
+                                                style={{
+                                                    height: s(20), width: s(30), marginRight: s(20), marginTop: s(5),
+                                                    alignSelf: 'center', alignContent: 'center'
                                                 }}
-                                               
+
                                                 source={require('../../images/Disable_eye_icon.png')} />
-                                            
+
                                         </View>
                                     </TouchableOpacity>
                                 )}
@@ -291,7 +368,41 @@ const SignUp = props => {
                         <View style={{ flexDirection: 'row', margin: s(10) }}>
 
                             <View style={{ borderTopLeftRadius: s(5), borderBottomLeftRadius: s(5), borderTopRightRadius: s(5), borderBottomRightRadius: s(5), borderWidth: s(0.5), borderLeftWidth: s(0.5), borderColor: colors.WHITE_COLOR, flex: 4 }}>
-                                <TextInput
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setModalVisible(true)
+                                    }}>
+                                    <Text
+                                        theme={{ colors: { primary: colors.WHITE_COLOR } }}
+                                        style={styles.input}
+                                        placeholder='School Code'
+                                        placeholderTextColor={colors.WHITE_COLOR}
+                                        fontFamily={fonts('poppinsRegular')}
+                                        mode="outlined"
+                                        returnKeyType={'done'}
+                                        outlineColor={colors.WHITE_COLOR}
+                                        selectionColor='transparent'
+                                        underlineColor='transparent'
+                                        underlineColorAndroid='transparent'
+                                        value={school_code}
+                                        onChangeText={text => setSchool_Code(text)}
+                                        keyboardType="text"
+
+
+                                    >{school_code}</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                        </View>
+
+                        <View style={{ flexDirection: 'row', margin: s(10) }}>
+
+                            <View style={{ borderTopLeftRadius: s(5), borderBottomLeftRadius: s(5), borderTopRightRadius: s(5), borderBottomRightRadius: s(5), borderWidth: s(0.5), borderLeftWidth: s(0.5), borderColor: colors.WHITE_COLOR, flex: 4 }}>
+                            <TouchableOpacity
+                                    onPress={() => {
+                                        setModalVehicleVisible(true)
+                                    }}>
+                                <Text
                                     theme={{ colors: { primary: colors.WHITE_COLOR } }}
                                     style={styles.input}
                                     placeholder='Bus No.'
@@ -308,33 +419,12 @@ const SignUp = props => {
                                     keyboardType="text"
 
 
-                                />
+                                >{bus_no}</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
 
-                        <View style={{ flexDirection: 'row', margin: s(10) }}>
 
-                            <View style={{ borderTopLeftRadius: s(5), borderBottomLeftRadius: s(5), borderTopRightRadius: s(5), borderBottomRightRadius: s(5), borderWidth: s(0.5), borderLeftWidth: s(0.5), borderColor: colors.WHITE_COLOR, flex: 4 }}>
-                                <TextInput
-                                    theme={{ colors: { primary: colors.WHITE_COLOR } }}
-                                    style={styles.input}
-                                    placeholder='School Code'
-                                    placeholderTextColor={colors.WHITE_COLOR}
-                                    fontFamily={fonts('poppinsRegular')}
-                                    mode="outlined"
-                                    returnKeyType={'done'}
-                                    outlineColor={colors.WHITE_COLOR}
-                                    selectionColor='transparent'
-                                    underlineColor='transparent'
-                                    underlineColorAndroid='transparent'
-                                    value={school_code}
-                                    onChangeText={text => setSchool_Code(text)}
-                                    keyboardType="text"
-
-
-                                />
-                            </View>
-                        </View>
 
 
                         <Button
@@ -350,9 +440,9 @@ const SignUp = props => {
                                     notifyMessage('Incorrect Mobile Number !');
                                 } else if (password == '') {
                                     notifyMessage('This field is not Empty !');
-                                } else if (bus_no == '') {
+                                } else if (bus_no == '' || bus_no == 'Bus No.') {
                                     notifyMessage('This field is not Empty !');
-                                } else if (school_code == '') {
+                                } else if (school_code == '' || school_code == 'School Code') {
                                     notifyMessage('This field is not Empty !');
                                 }
                                 else {
@@ -376,6 +466,35 @@ const SignUp = props => {
                     textStyle={styles.spinnerTextStyle}
                 />
             </KeyboardAvoidingView>
+            <SchoollistDialog
+                visible={modalVisible}
+                visibleFun={() => setModalVisible(!modalVisible)}
+                title="School List"
+                sub_title="Please select any one "
+                data={schoollist}
+                myCallback={(paramOne, paramTwo) => {
+                    console.log('paramOne', paramOne+"<><><"+paramTwo);
+                    setSchool_Code(paramOne);
+                    setBus_no('Bus No.');
+                    setModalVisible(false);
+                    bus_list(paramTwo);
+                    // clearAsyncStorage();
+                }}
+            />
+            <SchoolVehiclelistDialog
+                visible={modalVehicleVisible}
+                visibleFun={() => setModalVehicleVisible(!modalVehicleVisible)}
+                title="Vehicle List"
+                sub_title="Please select any one "
+                data={vehiclelist}
+                myCallback={(paramOne, paramTwo) => {
+                    console.log('paramOne', paramOne+"<><><"+paramTwo);
+                    setBus_no(paramOne);
+                    setModalVehicleVisible(false);
+                  
+                    // clearAsyncStorage();
+                }}
+            />
         </SafeAreaView>
 
     );
@@ -502,12 +621,12 @@ const storeData = async value => {
         // saving error
     }
 };
-const storeUserData = async (value,School_code,Bus_no,Storage_Key) => {
+const storeUserData = async (value, School_code, Bus_no, Storage_Key) => {
     try {
         await AsyncStorage.setItem('@user_id', value);
         await AsyncStorage.setItem('@school_code', School_code);
         await AsyncStorage.setItem('@bus_no', Bus_no);
-        await AsyncStorage.setItem('@access_token','Bearer ' + Storage_Key);
+        await AsyncStorage.setItem('@access_token', 'Bearer ' + Storage_Key);
 
     } catch (e) {
         // saving error
@@ -515,13 +634,13 @@ const storeUserData = async (value,School_code,Bus_no,Storage_Key) => {
 };
 const StoreDeviceToken = async token => {
     try {
-      //const jsonValue = JSON.stringify(token);
-      console.log('StoreDeviceToken>>', token);
-      await AsyncStorage.setItem('@deviceToken', token);
-      console.log('StoreDeviceToken>> after store', token);
+        //const jsonValue = JSON.stringify(token);
+        console.log('StoreDeviceToken>>', token);
+        await AsyncStorage.setItem('@deviceToken', token);
+        console.log('StoreDeviceToken>> after store', token);
     } catch (e) {
-      // saving error
-      console.log('error>>>', JSON.stringify(e));
+        // saving error
+        console.log('error>>>', JSON.stringify(e));
     }
-  };
+};
 export default SignUp;

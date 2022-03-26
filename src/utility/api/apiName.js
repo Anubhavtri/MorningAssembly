@@ -95,8 +95,11 @@ export default {
   drivers: 'drivers',
   lat_long: 'lat-long',
   tracking: 'tracking',
+  schools: 'schools',
+  school_vehicals: 'school-vehicles',
 
   driver_session_notificaion:'driver-session-notificaion',
+  end_driver_session:'end-driver-session',
   customer_notification: 'customer-notification',
 
 

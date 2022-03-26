@@ -129,9 +129,7 @@ const DriverDashboard = props => {
         try {
             const retrievedItem = await AsyncStorage.getItem('@school_code');
             if (retrievedItem !== null) {
-                const item = JSON.parse(retrievedItem);
-                console.log('getAccessToken', 'Error retrieving data' + item);
-                return item;
+                return retrievedItem;
             }
             return null;
         } catch (error) {
@@ -142,9 +140,7 @@ const DriverDashboard = props => {
         try {
             const retrievedItem = await AsyncStorage.getItem('@bus_no');
             if (retrievedItem !== null) {
-                const item = JSON.parse(retrievedItem);
-                console.log('getAccessToken', 'Error retrieving data' + item);
-                return item;
+                return retrievedItem;
             }
             return null;
         } catch (error) {
@@ -237,6 +233,38 @@ const DriverDashboard = props => {
                 setloader(false);
             });
     };
+    const DriverStopSession = async (sStatus, cStatus) => {
+        const client = await loggedInClient();
+        const data = {
+            school_code: await getschool_code(),
+            bus_number: await getBus_no(),
+            lat: lat,
+            long: long,
+    };
+        console.log('Request new ID system' + JSON.stringify(data));
+        client
+            .post(APIName.end_driver_session , data)
+            .then(response => {
+                if (response.status == 200) {
+                    let data = response.data;
+                    try {
+                        setModalVisible(true);
+                        console.log(
+                            'Response data from assesmentlist_skill' + JSON.stringify(data),
+                        );
+                        FireNotification()
+                    } catch (error) {
+                        console.log('Exception' + error.test);
+                    }
+
+                }
+
+            })
+            .catch(error => {
+                console.log('error>>>>>' + error);
+                setloader(false);
+            });
+    };
     const goToInitialRegion = () => {
         let initialRegion = Object.assign({}, initialRegion);
         initialRegion["latitudeDelta"] = 0.005;
@@ -312,8 +340,8 @@ const DriverDashboard = props => {
                     <TouchableOpacity
                         onPress={() => {
                             console.log('only check');
-                            setModalVisible(true);
                            
+                            DriverStopSession();
                             //props.navigation.goBack();
                            
                         }}>

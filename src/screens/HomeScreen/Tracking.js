@@ -42,18 +42,18 @@ const Tracking = props => {
     const [lat, setlat] = useState('');
     const [long, setlong] = useState('');
     const [region, setregion] = useState({
-        latitude: 22.7242284,
-        longitude: 75.7237604,
-        latitudeDelta: 19.0826881,
-        longitudeDelta: 72.6009781,
+        latitude: 0,
+        longitude: 0,
+        latitudeDelta: 0,
+        longitudeDelta: 0,
     });
     const mapRef = useRef();
-
+  
     useFocusEffect(
+       
         React.useCallback(() => {
-            console.log("useFocusEffect is working compitancylist>>")
-            // getCurrentLocation();
-            // setloader(true);
+            console.log("compitancylist>>")
+           
             if (mapRef.current) {
                 // list of _id's must same that has been provided to the identifier props of the Marker
                 mapRef.current.fitToSuppliedMarkers(competencies_list.map(({ item }) => item.lat !== 0 && item.lat !== null));
@@ -69,8 +69,6 @@ const Tracking = props => {
         })
             .then(location => {
                 console.log(location);
-                console.log(location.latitude);
-                console.log(location.longitude);
                 setlat(location.latitude)
                 setlong(location.longitude)
                 const region = {
@@ -90,8 +88,9 @@ const Tracking = props => {
         try {
             const retrievedItem = await AsyncStorage.getItem('@school_code');
             if (retrievedItem !== null) {
-                const item = JSON.parse(retrievedItem);
-                return item;
+                console.log('getAccessToken', 'Error retrieving data'+retrievedItem);
+                //const item = JSON.parse(retrievedItem);
+                return retrievedItem;
             }
             return null;
         } catch (error) {
@@ -102,8 +101,7 @@ const Tracking = props => {
         try {
             const retrievedItem = await AsyncStorage.getItem('@bus_no');
             if (retrievedItem !== null) {
-                const item = JSON.parse(retrievedItem);
-                return item;
+                return retrievedItem;
             }
             return null;
         } catch (error) {
@@ -124,19 +122,18 @@ const Tracking = props => {
                         try {
                             setloader(false)
                             console.log('Response data from compitancy_list' + JSON.stringify(data));
-
                             setcompetencies_list(data);
-                           
-                            
-                             
-                                const region = {
-                                    latitude: data.lat,
-                                    longitude: data.long,
+                              if(data?.lat!=null && data?.long!=null){
+                            const region = {
+                                    latitude: data?.lat,
+                                    longitude: data?.long,
                                     latitudeDelta: 0.01,
                                     longitudeDelta: 0.01,
                                 };
                                 setregion(region);
-                            
+                              }else{
+                                getCurrentLocation();
+                              }
                             console.log("dfdf",region);
 
                         } catch (error) {
@@ -146,6 +143,7 @@ const Tracking = props => {
 
                         setloader(false);
                     } else {
+                       
                         setloader(false);
                     }
 
@@ -191,7 +189,7 @@ const Tracking = props => {
             >
                 {/* {competencies_list?.length > 0 &&
                     competencies_list.filter((item) => item.lat !== 0 && item.lat !== null).map((marker, index) => ( */}
-                 {competencies_list.lat!=null?
+                 {competencies_list?.lat!=null?
                         <Marker
                             coordinate={region}
                             zoomEnabled={true}
@@ -201,10 +199,11 @@ const Tracking = props => {
                             image={require("./../../images/car.png")}
                         >
 
-                        </Marker>:getCurrentLocation()}
+                        </Marker>:null}
 
                     {/* ))} */}
             </MapView>
+            {competencies_list?.lat!=null?console.log("if is working"):console.log("if is not working")}
             {/*   image={flagBlueImg} */}
             <Spinner
                 visible={getloader}
