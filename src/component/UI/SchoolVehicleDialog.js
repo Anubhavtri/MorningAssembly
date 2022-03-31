@@ -140,7 +140,12 @@ const SchoolVehiclelistDialog = ({ visible, visibleFun, myCallback, title, sub_t
                             <TouchableOpacity
                                 onPress={() => {
                                     console.log('only check');
+                                    if(selected !='' && selected_id!=''){
                                     myCallback(selected,selected_id);
+                                    }else{
+                                        Alert.alert('Please select any one!')
+                                       
+                                    }
                                 }}>
                                 <View style={styles.button_confirm}>
                                     <Text

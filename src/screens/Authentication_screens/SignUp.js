@@ -82,7 +82,7 @@ const SignUp = props => {
         } else {
             /* this.showLoader(); */
             var data = {
-                name: name,
+                full_name: name,
                 mobileNo: mobile,
                 password: password,
                 role: props?.route?.params?.type,
@@ -103,7 +103,7 @@ const SignUp = props => {
                         console.log('Response data from axios', JSON.stringify(response.data));
                         setloader(false);
                         storeData(props?.route?.params?.type);
-                        storeUserData(response.data.data.id, response.data.data.school_code, response.data.data.bus_number, response.data.data.access_token);
+                        storeUserData(response.data.data.id, response.data.data.school_code, response.data.data.bus_number, response.data.data.access_token, response.data.data.full_name);
                         notifyMessage('Successfully SignUp !');
                         // props.navigation.navigate('OTP', { name: 'Jane 123456789' })
                         props.navigation.replace('Authorized', { name: 'Jane 123456789' })
@@ -180,8 +180,8 @@ const SignUp = props => {
         try {
             // const client = await loggedInClient();
             const client = await loginRequest();
-            console.log('APIName.drivers>>', APIName.school_vehicals+'?school_id='+id);
-            client.get(APIName.school_vehicals+'?school_id='+id)
+            console.log('APIName.drivers>>', APIName.school_vehicals + '?school_id=' + id);
+            client.get(APIName.school_vehicals + '?school_id=' + id)
                 .then(response => {
                     setloader(false);
                     if (response.status == 200) {
@@ -398,28 +398,28 @@ const SignUp = props => {
                         <View style={{ flexDirection: 'row', margin: s(10) }}>
 
                             <View style={{ borderTopLeftRadius: s(5), borderBottomLeftRadius: s(5), borderTopRightRadius: s(5), borderBottomRightRadius: s(5), borderWidth: s(0.5), borderLeftWidth: s(0.5), borderColor: colors.WHITE_COLOR, flex: 4 }}>
-                            <TouchableOpacity
+                                <TouchableOpacity
                                     onPress={() => {
                                         setModalVehicleVisible(true)
                                     }}>
-                                <Text
-                                    theme={{ colors: { primary: colors.WHITE_COLOR } }}
-                                    style={styles.input}
-                                    placeholder='Bus No.'
-                                    placeholderTextColor={colors.WHITE_COLOR}
-                                    fontFamily={fonts('poppinsRegular')}
-                                    mode="outlined"
-                                    returnKeyType={'next'}
-                                    outlineColor={colors.WHITE_COLOR}
-                                    selectionColor='transparent'
-                                    underlineColor='transparent'
-                                    underlineColorAndroid='transparent'
-                                    value={bus_no}
-                                    onChangeText={text => setBus_no(text)}
-                                    keyboardType="text"
+                                    <Text
+                                        theme={{ colors: { primary: colors.WHITE_COLOR } }}
+                                        style={styles.input}
+                                        placeholder='Bus No.'
+                                        placeholderTextColor={colors.WHITE_COLOR}
+                                        fontFamily={fonts('poppinsRegular')}
+                                        mode="outlined"
+                                        returnKeyType={'next'}
+                                        outlineColor={colors.WHITE_COLOR}
+                                        selectionColor='transparent'
+                                        underlineColor='transparent'
+                                        underlineColorAndroid='transparent'
+                                        value={bus_no}
+                                        onChangeText={text => setBus_no(text)}
+                                        keyboardType="text"
 
 
-                                >{bus_no}</Text>
+                                    >{bus_no}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -460,11 +460,12 @@ const SignUp = props => {
 
                     </View>
                 </ScrollView>
-                <Spinner
-                    visible={getloader}
-                    textContent={'Loading...'}
-                    textStyle={styles.spinnerTextStyle}
-                />
+                {getloader ?
+                    <Spinner
+                        visible={true}
+                        textContent={'Loading...'}
+                        textStyle={styles.spinnerTextStyle}
+                    /> : null}
             </KeyboardAvoidingView>
             <SchoollistDialog
                 visible={modalVisible}
@@ -473,8 +474,9 @@ const SignUp = props => {
                 sub_title="Please select any one "
                 data={schoollist}
                 myCallback={(paramOne, paramTwo) => {
-                    console.log('paramOne', paramOne+"<><><"+paramTwo);
+                    console.log('paramOne', paramOne + "<><><" + paramTwo);
                     setSchool_Code(paramOne);
+                    setloader(true);
                     setBus_no('Bus No.');
                     setModalVisible(false);
                     bus_list(paramTwo);
@@ -488,10 +490,10 @@ const SignUp = props => {
                 sub_title="Please select any one "
                 data={vehiclelist}
                 myCallback={(paramOne, paramTwo) => {
-                    console.log('paramOne', paramOne+"<><><"+paramTwo);
+                    console.log('paramOne', paramOne + "<><><" + paramTwo);
                     setBus_no(paramOne);
                     setModalVehicleVisible(false);
-                  
+
                     // clearAsyncStorage();
                 }}
             />
@@ -621,12 +623,13 @@ const storeData = async value => {
         // saving error
     }
 };
-const storeUserData = async (value, School_code, Bus_no, Storage_Key) => {
+const storeUserData = async (value, School_code, Bus_no, Storage_Key, full_name) => {
     try {
         await AsyncStorage.setItem('@user_id', value);
         await AsyncStorage.setItem('@school_code', School_code);
         await AsyncStorage.setItem('@bus_no', Bus_no);
         await AsyncStorage.setItem('@access_token', 'Bearer ' + Storage_Key);
+        await AsyncStorage.setItem('@full_name', full_name);
 
     } catch (e) {
         // saving error

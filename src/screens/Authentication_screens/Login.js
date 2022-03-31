@@ -84,7 +84,7 @@ const Login = props => {
                     try {
                         setloader(false);
                         storeData(props?.route?.params?.type);
-                        storeUserData(response.data.data.id,response.data.data.school_code,response.data.data.bus_number,response.data.data.access_token);
+                        storeUserData(response.data.data.id,response.data.data.school_code,response.data.data.bus_number,response.data.data.access_token,response.data.data.full_name);
                         //props.navigation.navigate('OTP', { name: 'Jane 123456789' })
                         notifyMessage('Successfully SignIn !' );
                         props.navigation.replace('Authorized', { name: 'Jane 123456789' })
@@ -262,12 +262,12 @@ const Login = props => {
 
 
 
-
+{getloader?
             <Spinner
-                visible={getloader}
+                visible={true}
                 textContent={'Loading...'}
                 textStyle={styles.spinnerTextStyle}
-            />
+            />:null}
             <Button
                 title={'Login'}
                 onPress={() => {
@@ -426,12 +426,13 @@ const storeData = async value => {
         // saving error
     }
 };
-const storeUserData = async (value,School_code,Bus_no,Storage_Key) => {
+const storeUserData = async (value,School_code,Bus_no,Storage_Key,full_name) => {
     try {
         await AsyncStorage.setItem('@user_id', value);
         await AsyncStorage.setItem('@school_code', School_code);
         await AsyncStorage.setItem('@bus_no', Bus_no);
         await AsyncStorage.setItem('@access_token','Bearer ' + Storage_Key);
+        await AsyncStorage.setItem('@full_name', full_name);
 
     } catch (e) {
         // saving error

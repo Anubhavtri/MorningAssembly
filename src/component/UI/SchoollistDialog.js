@@ -41,7 +41,7 @@ const SchoollistDialog = ({ visible, visibleFun, myCallback, title, sub_title, d
                         marginBottom: s(10),
 
                     }}>
-                   
+
                     <View style={{ flexDirection: 'row' }}>
                         {Index == index ?
                             <Image
@@ -140,7 +140,11 @@ const SchoollistDialog = ({ visible, visibleFun, myCallback, title, sub_title, d
                             <TouchableOpacity
                                 onPress={() => {
                                     console.log('only check');
-                                    myCallback(selected,selected_id);
+                                    if (selected != '' && selected_id != '') {
+                                        myCallback(selected, selected_id);
+                                    } else {
+                                        Alert.alert('Please select any one!')
+                                    }
                                 }}>
                                 <View style={styles.button_confirm}>
                                     <Text

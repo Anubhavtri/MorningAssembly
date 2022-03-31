@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 
 import {
@@ -40,9 +40,11 @@ export const mapRef = React.createRef();
 const DriverDashboard = props => {
     const [getloader, setloader] = useState(false);
     const [competencies_list, setcompetencies_list] = React.useState([]);
-    const [lat, setlat] = useState('');
-    const [long, setlong] = useState('');
+    const [lat, setlat] = useState(null);
+    const [long, setlong] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
+    let late = 0;
+    let longi = 0;
 
     const [region, setregion] = useState({
         latitude: 22.7242284,
@@ -59,6 +61,17 @@ const DriverDashboard = props => {
         }
     ];
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (getloader) {
+                updateLatLong()
+            }
+            else {
+
+            }
+        }, 20000);
+        return () => clearInterval(interval);
+    }, []);
     useFocusEffect(
         React.useCallback(() => {
             console.log("useFocusEffect is working compitancylist>>")
@@ -116,11 +129,9 @@ const DriverDashboard = props => {
         try {
             const retrievedItem = await AsyncStorage.getItem('@user_id');
             if (retrievedItem !== null) {
-                const item = JSON.parse(retrievedItem);
-                console.log('getAccessToken', 'Error retrieving data' + item);
-                return item;
+                return retrievedItem;
             }
-            return null;
+            return retrievedItem;
         } catch (error) {
             console.log('getAccessToken', 'Error retrieving data');
         }
@@ -158,6 +169,8 @@ const DriverDashboard = props => {
                 console.log(location.longitude);
                 setlat(location.latitude)
                 setlong(location.longitude)
+                late = location.latitude
+                longi = location.longitude
                 const region = {
                     latitude: location.latitude,
                     longitude: location.longitude,
@@ -171,14 +184,16 @@ const DriverDashboard = props => {
                 console.warn(code, message);
             })
     }
-    const updateLatLong = async (sStatus, cStatus) => {
+    const updateLatLong = async () => {
         const client = await loggedInClient();
         const data = {
-            lat: lat,
-            long: long,
+            lat: late,
+            long: longi,
 
         };
-        console.log('Request new ID system' + JSON.stringify(data));
+        console.log('Request new updateLatLong' + JSON.stringify(data));
+        console.log('Request new updateLatLong' + APIName.lat_long + '/' + await getAccessToken());
+
         client
             .put(APIName.lat_long + '/' + await getAccessToken(), data)
             .then(response => {
@@ -186,9 +201,9 @@ const DriverDashboard = props => {
                     let data = response.data;
                     try {
                         console.log(
-                            'Response data from assesmentlist_skill' + JSON.stringify(data),
+                            'Response data from updateLatLong' + JSON.stringify(data),
                         );
-                        FireNotification()
+
                     } catch (error) {
                         console.log('Exception' + error.test);
                     }
@@ -212,7 +227,7 @@ const DriverDashboard = props => {
         };
         console.log('Request new ID system' + JSON.stringify(data));
         client
-            .post(APIName.driver_session_notificaion , data)
+            .post(APIName.driver_session_notificaion, data)
             .then(response => {
                 if (response.status == 200) {
                     let data = response.data;
@@ -220,7 +235,7 @@ const DriverDashboard = props => {
                         console.log(
                             'Response data from assesmentlist_skill' + JSON.stringify(data),
                         );
-                        FireNotification()
+                        // FireNotification()
                     } catch (error) {
                         console.log('Exception' + error.test);
                     }
@@ -240,10 +255,10 @@ const DriverDashboard = props => {
             bus_number: await getBus_no(),
             lat: lat,
             long: long,
-    };
+        };
         console.log('Request new ID system' + JSON.stringify(data));
         client
-            .post(APIName.end_driver_session , data)
+            .post(APIName.end_driver_session, data)
             .then(response => {
                 if (response.status == 200) {
                     let data = response.data;
@@ -252,7 +267,7 @@ const DriverDashboard = props => {
                         console.log(
                             'Response data from assesmentlist_skill' + JSON.stringify(data),
                         );
-                        FireNotification()
+
                     } catch (error) {
                         console.log('Exception' + error.test);
                     }
@@ -286,7 +301,7 @@ const DriverDashboard = props => {
                         style={{ tintColor: colors.WHITE_COLOR, height: s(24), width: s(24) }}
                     />
                 </TouchableOpacity>
-                <Text style={styles.Title}>Waiting for Ride</Text>
+                <Text style={styles.Title}>Session</Text>
             </View>
             {getloader ?
                 <MapView
@@ -340,10 +355,10 @@ const DriverDashboard = props => {
                     <TouchableOpacity
                         onPress={() => {
                             console.log('only check');
-                           
+
                             DriverStopSession();
                             //props.navigation.goBack();
-                           
+
                         }}>
 
                         <Text
@@ -363,7 +378,7 @@ const DriverDashboard = props => {
                             console.log('only check');
                             setloader(true)
 
-                           // updateLatLong()
+                            // updateLatLong()
                             DriverStartSession();
                         }}>
 
@@ -378,17 +393,17 @@ const DriverDashboard = props => {
                     </TouchableOpacity>
                 </View>
             }
-             <CustomeDialog
-                        visible={modalVisible}
-                        visibleFun={() => setModalVisible(!modalVisible)}
-                        title="Alert"
-                        sub_title="Are you sure .you want to stop session?"
-                        myCallback={(paramOne, paramTwo) => {
-                            console.log('paramOne', paramOne);
-                            setModalVisible(false);
-                            setloader(false);
-                        }}
-                    />
+            <CustomeDialog
+                visible={modalVisible}
+                visibleFun={() => setModalVisible(!modalVisible)}
+                title="Alert"
+                sub_title="Are you sure .you want to stop session?"
+                myCallback={(paramOne, paramTwo) => {
+                    console.log('paramOne', paramOne);
+                    setModalVisible(false);
+                    setloader(false);
+                }}
+            />
         </View>
 
     );

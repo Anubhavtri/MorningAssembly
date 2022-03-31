@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 
 import {
@@ -42,6 +42,7 @@ const User_Dashboard = props => {
     const [VisibleTab, setVisibleTab] = useState('Requested');
     const [tabname, settabname] = useState('Home');
     const [NotificationVisible, setNotificationVisible] = React.useState(false);
+    const [username, setUsername] = useState('');
 
     const [driver, setdriver] = React.useState(false);
 
@@ -58,7 +59,17 @@ const User_Dashboard = props => {
             // }, 2000);
         }, [])
     );
-  
+    const getfull_name = async () => {
+        try {
+            const retrievedItem = await AsyncStorage.getItem('@full_name');
+            if (retrievedItem !== null) {
+                return retrievedItem;
+            }
+            return null;
+        } catch (error) {
+            console.log('getAccessToken', 'Error retrieving data');
+        }
+    };
     const getStoreData = async value => {
         try {
             const value = await AsyncStorage.getItem('@storage_Key');
@@ -93,7 +104,12 @@ const User_Dashboard = props => {
             console.log('getAccessToken', 'Error retrieving data');
         }
     };
-
+    useEffect(() => {
+        const getcall = async () => {
+            setUsername(await getfull_name());
+        }
+        getcall();
+    }, []);
     const CustomDrawerContent = (props) => {
         return (
             <View>
@@ -105,23 +121,28 @@ const User_Dashboard = props => {
                         marginTop: s(10),
 
                     }}>
+                    {console.log("full name is ", username)}
                     <Image
                         source={require('../../images/user.png')}
                         style={{ height: s(80), width: s(80), alignSelf: 'center', alignContent: 'center' }}
                     />
 
                 </View>
-                <Text style={styles.second_contant}>XYZ</Text>
-                <Text style={styles.email}>xyz@gmail.com</Text>
+                <Text style={styles.second_contant}>{username}</Text>
+                {/* <Text style={styles.email}>xyz@gmail.com</Text> */}
+                <TouchableOpacity
+                    onPress={() => {
+                        props.navigation.closeDrawer()
 
-                <View style={{ flexDirection: 'row', margin: s(10) }}>
-                    <Image
-                        source={require('../../images/home.png')}
-                        style={{ tintColor: colors.WHITE_COLOR, height: s(20), width: s(20) }}
-                    />
-                    <Text style={{ fontFamily: fonts('poppinsMedium'), textAlign: 'center', alignSelf: 'center', color: colors.WHITE_COLOR, marginLeft: s(5) }}>Home </Text>
-                </View>
-
+                    }}>
+                    <View style={{ flexDirection: 'row', margin: s(10) }}>
+                        <Image
+                            source={require('../../images/home.png')}
+                            style={{ tintColor: colors.WHITE_COLOR, height: s(20), width: s(20) }}
+                        />
+                        <Text style={{ fontFamily: fonts('poppinsMedium'), textAlign: 'center', alignSelf: 'center', color: colors.WHITE_COLOR, marginLeft: s(5) }}>Home </Text>
+                    </View>
+                </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => {
                         console.log("working C");
@@ -145,7 +166,7 @@ const User_Dashboard = props => {
                         <Text style={{ fontFamily: fonts('poppinsMedium'), textAlign: 'center', alignSelf: 'center', color: colors.WHITE_COLOR, marginLeft: s(5) }}>{driver ? 'Tracking' : 'Start Session'}</Text>
                     </View>
                 </TouchableOpacity>
-                <View style={{ flexDirection: 'row', margin: s(10) }}>
+                {/* <View style={{ flexDirection: 'row', margin: s(10) }}>
                     <Image
                         source={require('../../images/account.png')}
                         style={{ tintColor: colors.WHITE_COLOR, height: s(20), width: s(20) }}
@@ -158,7 +179,7 @@ const User_Dashboard = props => {
                         style={{ tintColor: colors.WHITE_COLOR, height: s(20), width: s(20) }}
                     />
                     <Text style={{ fontFamily: fonts('poppinsMedium'), textAlign: 'center', alignSelf: 'center', color: colors.WHITE_COLOR, marginLeft: s(5) }}>Support </Text>
-                </View>
+                </View> */}
                 <View style={{ flexDirection: 'row', margin: s(10) }}>
                     <Image
                         source={require('../../images/compliant.png')}
@@ -195,8 +216,8 @@ const User_Dashboard = props => {
             AsyncStorage.clear()
             console.log('try after  working');
             setModalVisible(false);
-            RootNavigation.resetRoot('Unauthorized', {screen: 'Login'});
-           // RootNavigation.navigate('Unauthorized', { screen: 'Login' });
+            RootNavigation.resetRoot('Unauthorized', { screen: 'Login' });
+            // RootNavigation.navigate('Unauthorized', { screen: 'Login' });
         } catch (e) {
             console.log('async clear error', e);
         }
@@ -204,9 +225,9 @@ const User_Dashboard = props => {
 
     const HomeScreen = (props) => {
         if (VisibleTab == 'Requested' || VisibleTab == 'ongoing' || VisibleTab == 'Completed') {
-            {setNotificationVisible(true)}
+            { setNotificationVisible(true) }
             return (
-               
+
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 
                     {RenderTab()}
@@ -318,7 +339,7 @@ const User_Dashboard = props => {
                 </View>
 
             )
-       
+
         }
         else {
             return <Tracking {...props}
@@ -387,22 +408,22 @@ const User_Dashboard = props => {
                         component={DriverDashboardStack}
                         options={{ headerShown: false }}
                     />
-                    
+
 
                 </Drawer.Navigator>
-                {NotificationVisible && driver?
-                <View style={{position: 'absolute', top: 0, right: 0, margin: s(15) }}>
-                <TouchableOpacity
-                    onPress={() => {
-                        
-                        props.navigation.navigate("NotificationStack")
-                    }}>
-                <Image
-                    source={require('../../images/bell.png')}
-                    style={[styles.icon, { tintColor: colors.TEXT_COLOR}]}
-                />
-                </TouchableOpacity>
-                </View>:null}
+                {NotificationVisible && driver ?
+                    <View style={{ position: 'absolute', top: 0, right: 0, margin: s(15) }}>
+                        <TouchableOpacity
+                            onPress={() => {
+
+                                props.navigation.navigate("NotificationStack")
+                            }}>
+                            <Image
+                                source={require('../../images/bell.png')}
+                                style={[styles.icon, { tintColor: colors.TEXT_COLOR }]}
+                            />
+                        </TouchableOpacity>
+                    </View> : null}
             </>
         );
     }

@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef,useEffect } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 
 import {
@@ -48,12 +48,19 @@ const Tracking = props => {
         longitudeDelta: 0,
     });
     const mapRef = useRef();
-  
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+          console.log('This will run every second!');
+          compitancy_list();
+        }, 20000);
+        return () => clearInterval(interval);
+      }, []);
     useFocusEffect(
-       
+
         React.useCallback(() => {
             console.log("compitancylist>>")
-           
+
             if (mapRef.current) {
                 // list of _id's must same that has been provided to the identifier props of the Marker
                 mapRef.current.fitToSuppliedMarkers(competencies_list.map(({ item }) => item.lat !== 0 && item.lat !== null));
@@ -88,7 +95,7 @@ const Tracking = props => {
         try {
             const retrievedItem = await AsyncStorage.getItem('@school_code');
             if (retrievedItem !== null) {
-                console.log('getAccessToken', 'Error retrieving data'+retrievedItem);
+                console.log('getAccessToken', 'Error retrieving data' + retrievedItem);
                 //const item = JSON.parse(retrievedItem);
                 return retrievedItem;
             }
@@ -111,9 +118,9 @@ const Tracking = props => {
     const compitancy_list = async () => {
         try {
             const client = await loggedInClient();
-            console.log('APIName.drivers>>', APIName.tracking+'?school_code='+await getschool_code()+'&bus_number='+await getBus_no());
+            console.log('APIName.drivers>>', APIName.tracking + '?school_code=' + await getschool_code() + '&bus_number=' + await getBus_no());
             client
-                .get(APIName.tracking+'?school_code='+await getschool_code()+'&bus_number='+await getBus_no())
+                .get(APIName.tracking + '?school_code=' + await getschool_code() + '&bus_number=' + await getBus_no())
                 .then(response => {
                     setloader(false);
                     if (response.status == 200) {
@@ -123,18 +130,18 @@ const Tracking = props => {
                             setloader(false)
                             console.log('Response data from compitancy_list' + JSON.stringify(data));
                             setcompetencies_list(data);
-                              if(data?.lat!=null && data?.long!=null){
-                            const region = {
+                            if (data?.lat != null && data?.long != null) {
+                                const region = {
                                     latitude: data?.lat,
                                     longitude: data?.long,
                                     latitudeDelta: 0.01,
                                     longitudeDelta: 0.01,
                                 };
                                 setregion(region);
-                              }else{
+                            } else {
                                 getCurrentLocation();
-                              }
-                            console.log("dfdf",region);
+                            }
+                            console.log("dfdf", region);
 
                         } catch (error) {
                             console.log('Exception' + error.test);
@@ -143,7 +150,7 @@ const Tracking = props => {
 
                         setloader(false);
                     } else {
-                       
+
                         setloader(false);
                     }
 
@@ -152,10 +159,10 @@ const Tracking = props => {
                     console.log('error' + error);
                     setloader(false);
                 });
-        } catch (error){ 
-            console.log("catch is working >>>>",JSON.stringify(error));
+        } catch (error) {
+            console.log("catch is working >>>>", JSON.stringify(error));
             setloader(false);
-         }
+        }
     };
     return (
 
@@ -189,21 +196,21 @@ const Tracking = props => {
             >
                 {/* {competencies_list?.length > 0 &&
                     competencies_list.filter((item) => item.lat !== 0 && item.lat !== null).map((marker, index) => ( */}
-                 {competencies_list?.lat!=null?
-                        <Marker
-                            coordinate={region}
-                            zoomEnabled={true}
-                            // pinColor={colors.PRIMARY_COLOR}
-                            title={'Driver ' }
-                            description={'' }
-                            image={require("./../../images/car.png")}
-                        >
+                {competencies_list?.lat != null ?
+                    <Marker
+                        coordinate={region}
+                        zoomEnabled={true}
+                        // pinColor={colors.PRIMARY_COLOR}
+                        title={'Driver '}
+                        description={''}
+                        image={require("./../../images/car.png")}
+                    >
 
-                        </Marker>:null}
+                    </Marker> : null}
 
-                    {/* ))} */}
+                {/* ))} */}
             </MapView>
-            {competencies_list?.lat!=null?console.log("if is working"):console.log("if is not working")}
+            {competencies_list?.lat != null ? console.log("if is working") : console.log("if is not working")}
             {/*   image={flagBlueImg} */}
             <Spinner
                 visible={getloader}
