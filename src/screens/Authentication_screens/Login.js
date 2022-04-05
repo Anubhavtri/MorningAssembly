@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect,useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import {
     Alert,
@@ -32,6 +32,7 @@ import messaging from '@react-native-firebase/messaging';
 
 import fonts from '../../utility/fonts';
 import GetLocation from 'react-native-get-location';
+import { KeyboardAccessoryView } from 'react-native-keyboard-accessory'
 
 const Login = props => {
     const [getloader, setloader] = useState(false);
@@ -53,7 +54,7 @@ const Login = props => {
             const regToken = await messaging().getToken();
             console.log('token!-------------', regToken);
             setDeviceToken(regToken);
-             StoreDeviceToken(regToken);
+            StoreDeviceToken(regToken);
             return regToken;
         } catch (error) {
             console.log('error-------------', error);
@@ -70,7 +71,7 @@ const Login = props => {
             /* this.showLoader(); */
             var data = {
                 mobileNo: mobile,
-                password:password,
+                password: password,
                 role: props?.route?.params?.type,
                 device_token: DeviceToken,
                 platform: Platform.OS
@@ -84,9 +85,9 @@ const Login = props => {
                     try {
                         setloader(false);
                         storeData(props?.route?.params?.type);
-                        storeUserData(response.data.data.id,response.data.data.school_code,response.data.data.bus_number,response.data.data.access_token,response.data.data.full_name);
+                        storeUserData(response.data.data.id, response.data.data.school_code, response.data.data.bus_number, response.data.data.access_token, response.data.data.full_name);
                         //props.navigation.navigate('OTP', { name: 'Jane 123456789' })
-                        notifyMessage('Successfully SignIn !' );
+                        notifyMessage('Successfully SignIn !');
                         props.navigation.replace('Authorized', { name: 'Jane 123456789' })
                         //props.navigation.replace('Authorized', { name: 'Jane 123456789' });
                     } catch (error) {
@@ -144,10 +145,13 @@ const Login = props => {
             <Text style={styles.sectionTitle}>
                 Enter your mobile number to get {'\n'} Verification code
             </Text>
+            
             <View style={{ flexDirection: 'row', margin: s(10) }}>
                 <View style={{ flex: 1, backgroundColor: colors.PRIMARY_COLOR, justifyContent: 'center', borderTopLeftRadius: s(5), borderBottomLeftRadius: s(5), borderWidth: s(0.5) }}>
                     <Text style={{ fontFamily: fonts('poppinsMedium'), alignSelf: 'center', textAlign: 'center', justifyContent: 'center', color: colors.WHITE_COLOR, padding: s(10) }}>+91</Text>
                 </View>
+               
+  
                 <View style={{ borderTopRightRadius: s(5), borderBottomRightRadius: s(5), borderWidth: s(0.5), borderLeftWidth: 0, borderColor: colors.WHITE_COLOR, flex: 4 }}>
                     <TextInput
                         theme={{ colors: { primary: colors.WHITE_COLOR } }}
@@ -156,6 +160,7 @@ const Login = props => {
                         placeholderTextColor={colors.WHITE_COLOR}
                         fontFamily={fonts('poppinsRegular')}
                         mode="outlined"
+                        multiline={true}
                         returnKeyType={'next'}
                         outlineColor={colors.WHITE_COLOR}
                         selectionColor='transparent'
@@ -168,6 +173,7 @@ const Login = props => {
 
                     />
                 </View>
+               
             </View>
             <View style={{ flexDirection: 'row', margin: s(10) }}>
 
@@ -262,12 +268,12 @@ const Login = props => {
 
 
 
-{getloader?
-            <Spinner
-                visible={true}
-                textContent={'Loading...'}
-                textStyle={styles.spinnerTextStyle}
-            />:null}
+            {getloader ?
+                <Spinner
+                    visible={true}
+                    textContent={'Loading...'}
+                    textStyle={styles.spinnerTextStyle}
+                /> : null}
             <Button
                 title={'Login'}
                 onPress={() => {
@@ -426,12 +432,12 @@ const storeData = async value => {
         // saving error
     }
 };
-const storeUserData = async (value,School_code,Bus_no,Storage_Key,full_name) => {
+const storeUserData = async (value, School_code, Bus_no, Storage_Key, full_name) => {
     try {
         await AsyncStorage.setItem('@user_id', value);
         await AsyncStorage.setItem('@school_code', School_code);
         await AsyncStorage.setItem('@bus_no', Bus_no);
-        await AsyncStorage.setItem('@access_token','Bearer ' + Storage_Key);
+        await AsyncStorage.setItem('@access_token', 'Bearer ' + Storage_Key);
         await AsyncStorage.setItem('@full_name', full_name);
 
     } catch (e) {
@@ -440,11 +446,11 @@ const storeUserData = async (value,School_code,Bus_no,Storage_Key,full_name) => 
 };
 const StoreDeviceToken = async token => {
     try {
-      //const jsonValue = JSON.stringify(token);
-      await AsyncStorage.setItem('@deviceToken', token);
+        //const jsonValue = JSON.stringify(token);
+        await AsyncStorage.setItem('@deviceToken', token);
     } catch (e) {
-      // saving error
-      console.log('error>>>', JSON.stringify(e));
+        // saving error
+        console.log('error>>>', JSON.stringify(e));
     }
-  };
+};
 export default Login;

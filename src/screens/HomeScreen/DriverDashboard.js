@@ -36,6 +36,7 @@ import GetLocation from 'react-native-get-location';
 import fonts from '../../utility/fonts';
 import MapView, { AnimatedRegion } from 'react-native-maps';
 import CustomeDialog from '../../component/UI/CustomeDialog';
+import KeepAwake from 'react-native-keep-awake';
 export const mapRef = React.createRef();
 const DriverDashboard = props => {
     const [getloader, setloader] = useState(false);
@@ -61,10 +62,10 @@ const DriverDashboard = props => {
         }
     ];
 
-    useEffect(() => {
+    useFocusEffect(() => {
         const interval = setInterval(() => {
             if (getloader) {
-                updateLatLong()
+                getCurrentLocation();
             }
             else {
 
@@ -72,6 +73,16 @@ const DriverDashboard = props => {
         }, 20000);
         return () => clearInterval(interval);
     }, []);
+   
+    useFocusEffect(() => {
+        if (getloader) {
+            console.log("useFocusEffect late>>",lat);
+            console.log("useFocusEffect longi>>",long);
+
+            updateLatLong()
+           
+        }
+    }, [late]);
     useFocusEffect(
         React.useCallback(() => {
             console.log("useFocusEffect is working compitancylist>>")
@@ -171,6 +182,7 @@ const DriverDashboard = props => {
                 setlong(location.longitude)
                 late = location.latitude
                 longi = location.longitude
+                console.log("late>>>>>>>>>>>>>>>>>>",late);
                 const region = {
                     latitude: location.latitude,
                     longitude: location.longitude,
@@ -187,8 +199,8 @@ const DriverDashboard = props => {
     const updateLatLong = async () => {
         const client = await loggedInClient();
         const data = {
-            lat: late,
-            long: longi,
+            lat: late==0?lat:late,
+            long: longi==0?long:longi,
 
         };
         console.log('Request new updateLatLong' + JSON.stringify(data));
@@ -213,7 +225,7 @@ const DriverDashboard = props => {
             })
             .catch(error => {
                 console.log('error' + error);
-                setloader(false);
+               
             });
     };
     const DriverStartSession = async (sStatus, cStatus) => {
@@ -232,6 +244,7 @@ const DriverDashboard = props => {
                 if (response.status == 200) {
                     let data = response.data;
                     try {
+                        
                         console.log(
                             'Response data from assesmentlist_skill' + JSON.stringify(data),
                         );
@@ -245,7 +258,7 @@ const DriverDashboard = props => {
             })
             .catch(error => {
                 console.log('error>>>>>' + error);
-                setloader(false);
+                
             });
     };
     const DriverStopSession = async (sStatus, cStatus) => {
@@ -263,7 +276,6 @@ const DriverDashboard = props => {
                 if (response.status == 200) {
                     let data = response.data;
                     try {
-                        setModalVisible(true);
                         console.log(
                             'Response data from assesmentlist_skill' + JSON.stringify(data),
                         );
@@ -277,7 +289,7 @@ const DriverDashboard = props => {
             })
             .catch(error => {
                 console.log('error>>>>>' + error);
-                setloader(false);
+               
             });
     };
     const goToInitialRegion = () => {
@@ -349,14 +361,16 @@ const DriverDashboard = props => {
                 textContent={'Loading...'}
                 textStyle={styles.spinnerTextStyle}
             />
+            {getloader?
+            <KeepAwake />:null}
             {getloader ?
 
                 <View style={styles.button_stop}>
                     <TouchableOpacity
                         onPress={() => {
                             console.log('only check');
-
-                            DriverStopSession();
+                            setModalVisible(true);
+                         
                             //props.navigation.goBack();
 
                         }}>
@@ -372,6 +386,7 @@ const DriverDashboard = props => {
                     </TouchableOpacity>
                 </View>
                 :
+                
                 <View style={styles.button_confirm}>
                     <TouchableOpacity
                         onPress={() => {
@@ -402,6 +417,7 @@ const DriverDashboard = props => {
                     console.log('paramOne', paramOne);
                     setModalVisible(false);
                     setloader(false);
+                    DriverStopSession();
                 }}
             />
         </View>

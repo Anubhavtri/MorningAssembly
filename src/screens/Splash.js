@@ -24,7 +24,9 @@ const Splash = props => {
 
         } else {
           console.log('else is working ');
-          props.navigation.replace('SelectType', { name: 'Jane 123456789' });
+         props.navigation.replace('SelectType', { name: 'Jane 123456789' });
+         // props.navigation.replace('TestingKeyboard', { name: 'Jane 123456789' });
+
         }
       } catch (e) {
         console.log('Exception>>' + e);

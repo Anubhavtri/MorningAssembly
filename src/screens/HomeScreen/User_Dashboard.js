@@ -48,24 +48,32 @@ const User_Dashboard = props => {
 
     const [modalVisible, setModalVisible] = useState(false);
     useFocusEffect(
-        React.useCallback(() => {
+        
+       
+          React.useCallback(() => {
             console.log("useFocusEffect is working UserDashboard>>")
             setNotificationVisible(true)
             getStoreData();
 
-            // setTimeout(async () => {
-
-
-            // }, 2000);
+            setTimeout(async () => {
+                try {
+                  const value = await AsyncStorage.getItem('@full_name');
+                 // setUsername(value)
+                  console.log("useFocusEffect is working UserDashboard>>",value)
+                } catch (e) {
+                    console.log("useFocusEffect is working UserDashboard>>",JSON.stringify(e))
+                }
+              }, 1000)
         }, [])
     );
     const getfull_name = async () => {
         try {
             const retrievedItem = await AsyncStorage.getItem('@full_name');
             if (retrievedItem !== null) {
+                setUsername(retrievedItem)
                 return retrievedItem;
             }
-            return null;
+            return retrievedItem;
         } catch (error) {
             console.log('getAccessToken', 'Error retrieving data');
         }
@@ -104,12 +112,21 @@ const User_Dashboard = props => {
             console.log('getAccessToken', 'Error retrieving data');
         }
     };
+    // useEffect( async () => {
+    //     // const getcall = async () => {
+    //         setUsername(await getfull_name());
+    //     // }
+    //     // getcall();
+    // }, []);
     useEffect(() => {
-        const getcall = async () => {
-            setUsername(await getfull_name());
+        async function fetchData() {
+          // You can await here
+          const response = await getfull_name();
+         
+          // ...
         }
-        getcall();
-    }, []);
+        fetchData();
+      }, []);
     const CustomDrawerContent = (props) => {
         return (
             <View>

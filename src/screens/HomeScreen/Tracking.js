@@ -60,8 +60,7 @@ const Tracking = props => {
 
         React.useCallback(() => {
             console.log("compitancylist>>")
-
-            if (mapRef.current) {
+           if (mapRef.current) {
                 // list of _id's must same that has been provided to the identifier props of the Marker
                 mapRef.current.fitToSuppliedMarkers(competencies_list.map(({ item }) => item.lat !== 0 && item.lat !== null));
             }
