@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
@@ -66,5 +66,20 @@
         </service>
         <service android:name="com.dieam.reactnativepushnotification.modules.RNFirebaseBackgroundMessagingService" />
 
+
+<meta-data
+      android:name="com.supersami.foregroundservice.notification_channel_name"
+      android:value="Sticky Title"
+    />
+    <meta-data
+      android:name="com.supersami.foregroundservice.notification_channel_description"
+      android:value="Sticky Description."
+    />
+    <meta-data
+      android:name="com.supersami.foregroundservice.notification_color"
+      android:resource="@color/blue"
+    />
+    <service android:name="com.supersami.foregroundservice.ForegroundService"></service>
+    <service android:name="com.supersami.foregroundservice.ForegroundServiceTask"></service>
     </application>
 </manifest>

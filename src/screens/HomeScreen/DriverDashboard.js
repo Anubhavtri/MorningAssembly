@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect,useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 
 import {
@@ -37,6 +37,9 @@ import fonts from '../../utility/fonts';
 import MapView, { AnimatedRegion } from 'react-native-maps';
 import CustomeDialog from '../../component/UI/CustomeDialog';
 import KeepAwake from 'react-native-keep-awake';
+import { PermissionsAndroid } from 'react-native';
+import ReactNativeForegroundService from '@supersami/rn-foreground-service';
+import RNLocation from 'react-native-location';
 export const mapRef = React.createRef();
 const DriverDashboard = props => {
     const [getloader, setloader] = useState(false);
@@ -46,6 +49,7 @@ const DriverDashboard = props => {
     const [modalVisible, setModalVisible] = useState(false);
     let late = 0;
     let longi = 0;
+    
 
     const [region, setregion] = useState({
         latitude: 22.7242284,
@@ -53,47 +57,60 @@ const DriverDashboard = props => {
         latitudeDelta: 19.0826881,
         longitudeDelta: 72.6009781,
     });
-    var markers = [
-        {
-            latitude: 45.65,
-            longitude: -78.90,
-            title: 'Foo Place',
-            subtitle: '1234 Foo Drive'
-        }
-    ];
+  
 
-    useFocusEffect(() => {
-        const interval = setInterval(() => {
-            if (getloader) {
-                getCurrentLocation();
-            }
-            else {
-
-            }
-        }, 20000);
-        return () => clearInterval(interval);
-    }, []);
+    // useFocusEffect(() => {
+    //     const interval = setInterval(() => {
+    //         if (getloader) {
+    //             getCurrentLocation();
+    //         }
+    //         else {}
+    //     }, 20000);
+    //     return () => clearInterval(interval);
+    // }, []);
    
-    useFocusEffect(() => {
-        if (getloader) {
-            console.log("useFocusEffect late>>",lat);
-            console.log("useFocusEffect longi>>",long);
+    // useFocusEffect(() => {
+    //     console.log("useFocusEffect late>>",lat);
+    //     if (getloader) {
+    //         console.log("useFocusEffect late>>",lat);
+    //         console.log("useFocusEffect longi>>",long);
 
-            updateLatLong()
+    //         updateLatLong()
            
-        }
-    }, [late]);
-    useFocusEffect(
-        React.useCallback(() => {
-            console.log("useFocusEffect is working compitancylist>>")
-            getCurrentLocation();
-            setloader(false);
-            // getCurrentPosition();
-            // setloader(true);
-            // compitancy_list();
-
-        }, [])
-    );
+    //     }
+    // }, [lat]);
+    // useFocusEffect(
+    //     useCallback(() => {
+    //         return () => {
+    //           try {
+    //             getCurrentLocation();
+    //             setloader(false);
+               
+                
+    //           } catch (error) { 
+    //               console.log("useFocusEffect",JSON.stringify(error));
+    //           }
+    //         };
+    //       }, []),
+    // );
+    useEffect(() => {
+        setloader(false);
+        getCurrentLocation("");
+        GetPermission("");
+        setTimeout(async () => {
+           try {
+              const value = await AsyncStorage.getItem('@startsession');
+            
+              if(value==='true'){
+                console.log("value>>>>>>>>>>>",value);
+                 setloader(value)
+                }
+               } catch (e) {
+              console.log('Exception>>' + e);
+              // error reading value
+            }
+          },1500);
+      }, []);
 
     const FireNotification = async () => {
         try {
@@ -136,6 +153,7 @@ const DriverDashboard = props => {
                 });
         } catch { }
     };
+   
     const getAccessToken = async () => {
         try {
             const retrievedItem = await AsyncStorage.getItem('@user_id');
@@ -169,20 +187,23 @@ const DriverDashboard = props => {
             console.log('getAccessToken', 'Error retrieving data');
         }
     };
-    const getCurrentLocation = () => {
+    const getCurrentLocation = (start) => {
         GetLocation.getCurrentPosition({
             enableHighAccuracy: true,
             timeout: 15000,
         })
             .then(location => {
                 console.log(location);
-                console.log(location.latitude);
-                console.log(location.longitude);
+                
                 setlat(location.latitude)
                 setlong(location.longitude)
                 late = location.latitude
                 longi = location.longitude
-                console.log("late>>>>>>>>>>>>>>>>>>",late);
+                console.log("location.latitude",start);
+
+                if(start !=""){
+                    updateLatLong()
+                }
                 const region = {
                     latitude: location.latitude,
                     longitude: location.longitude,
@@ -190,6 +211,7 @@ const DriverDashboard = props => {
                     longitudeDelta: 0.0034,
                 };
                 setregion(region);
+               
             })
             .catch(error => {
                 const { code, message } = error;
@@ -244,7 +266,12 @@ const DriverDashboard = props => {
                 if (response.status == 200) {
                     let data = response.data;
                     try {
-                        
+                        setloader(true)
+                        storeUserData('true')
+                        setTimeout(() => {
+                            GetPermission('start');
+                          }, 1000)
+                       
                         console.log(
                             'Response data from assesmentlist_skill' + JSON.stringify(data),
                         );
@@ -257,7 +284,7 @@ const DriverDashboard = props => {
 
             })
             .catch(error => {
-                console.log('error>>>>>' + error);
+                console.log('error>>>>>' + JSON.stringify(error));
                 
             });
     };
@@ -276,6 +303,8 @@ const DriverDashboard = props => {
                 if (response.status == 200) {
                     let data = response.data;
                     try {
+                        ReactNativeForegroundService.stop();
+                        storeUserData('false');
                         console.log(
                             'Response data from assesmentlist_skill' + JSON.stringify(data),
                         );
@@ -297,6 +326,60 @@ const DriverDashboard = props => {
         initialRegion["latitudeDelta"] = 0.005;
         initialRegion["longitudeDelta"] = 0.005;
         mapView.animateToRegion(initialRegion, 2000);
+    }
+
+    const storeUserData = async (value) => {
+        try {
+            await AsyncStorage.setItem('@startsession', value);
+            } catch (e) {
+            // saving error
+        }
+    };
+    
+    const GetPermission= async (start) =>{
+        console.log("GetPermission methode is calling");
+        try{
+        const backgroundgranted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION,
+            {
+              title: 'Background Location Permission',
+              message:
+                'We need access to your location ' +
+                'so you can get live quality updates.',
+              buttonNeutral: 'Ask Me Later',
+              buttonNegative: 'Cancel',
+              buttonPositive: 'OK',
+            },
+          );
+          console.log("permission>>",backgroundgranted);
+          
+          if (backgroundgranted === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log("permission>>>>>",backgroundgranted);
+            console.log("permission>>>>>",getloader);
+
+            if (start !="") {
+            ReactNativeForegroundService.add_task(() => {
+                console.log('I am Being Tested')
+                if (start !="") {
+                    getCurrentLocation(start);
+                }
+                else {}
+            }
+           , {
+                delay: 15000,
+                onLoop: true,
+                taskId: 'taskid',
+                onError: (e) => console.log(`Error logging:`, e),
+              });
+            ReactNativeForegroundService.start({
+                id: 144,
+                title: 'Session is started',
+                message: 'you are online!',
+              });
+          }
+        }
+        }catch(error){console.log("error permission>>>",JSON.stringify(error));}
+       
     }
     return (
 
@@ -391,10 +474,10 @@ const DriverDashboard = props => {
                     <TouchableOpacity
                         onPress={() => {
                             console.log('only check');
-                            setloader(true)
-
+                           
+                        
                             // updateLatLong()
-                            DriverStartSession();
+                             DriverStartSession();
                         }}>
 
                         <Text

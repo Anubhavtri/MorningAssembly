@@ -58,7 +58,7 @@ const User_Dashboard = props => {
             setTimeout(async () => {
                 try {
                   const value = await AsyncStorage.getItem('@full_name');
-                 // setUsername(value)
+                  setUsername(value)
                   console.log("useFocusEffect is working UserDashboard>>",value)
                 } catch (e) {
                     console.log("useFocusEffect is working UserDashboard>>",JSON.stringify(e))
