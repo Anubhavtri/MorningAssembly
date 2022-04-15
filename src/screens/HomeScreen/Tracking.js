@@ -138,6 +138,7 @@ const Tracking = props => {
                                 };
                                 setregion(region);
                             } else {
+                                Alert.alert('Driver session not started')
                                 getCurrentLocation();
                             }
                             console.log("dfdf", region);

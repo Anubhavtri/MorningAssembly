@@ -48,22 +48,22 @@ const User_Dashboard = props => {
 
     const [modalVisible, setModalVisible] = useState(false);
     useFocusEffect(
-        
-       
-          React.useCallback(() => {
+
+
+        React.useCallback(() => {
             console.log("useFocusEffect is working UserDashboard>>")
             setNotificationVisible(true)
             getStoreData();
 
             setTimeout(async () => {
                 try {
-                  const value = await AsyncStorage.getItem('@full_name');
-                  setUsername(value)
-                  console.log("useFocusEffect is working UserDashboard>>",value)
+                    const value = await AsyncStorage.getItem('@full_name');
+                    setUsername(value)
+                    console.log("useFocusEffect is working UserDashboard>>", value)
                 } catch (e) {
-                    console.log("useFocusEffect is working UserDashboard>>",JSON.stringify(e))
+                    console.log("useFocusEffect is working UserDashboard>>", JSON.stringify(e))
                 }
-              }, 1000)
+            }, 1000)
         }, [])
     );
     const getfull_name = async () => {
@@ -120,13 +120,13 @@ const User_Dashboard = props => {
     // }, []);
     useEffect(() => {
         async function fetchData() {
-          // You can await here
-          const response = await getfull_name();
-         
-          // ...
+            // You can await here
+            const response = await getfull_name();
+
+            // ...
         }
         fetchData();
-      }, []);
+    }, []);
     const CustomDrawerContent = (props) => {
         return (
             <View>
@@ -149,7 +149,11 @@ const User_Dashboard = props => {
                 {/* <Text style={styles.email}>xyz@gmail.com</Text> */}
                 <TouchableOpacity
                     onPress={() => {
-                        props.navigation.closeDrawer()
+                        try{
+                        setVisibleTab('Requested')
+                        settabname('Home');
+                        props.navigation.closeDrawer()}
+                        catch(error){}
 
                     }}>
                     <View style={{ flexDirection: 'row', margin: s(10) }}>
