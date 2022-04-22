@@ -56,12 +56,13 @@ const Splash = props => {
 
           <Image
             style={{
-              height: '50%', width: '80%',
+              height: s(150),
               backgroundColor: 'transparent',
               alignContent: 'center',
-              alignSelf: 'center'
+              alignSelf: 'center',
+              resizeMode:'contain'
             }}
-            source={require('../images/logo.jpeg')} />}
+            source={require('../images/logo.png')} />}
 
 
       </View>
@@ -72,7 +73,7 @@ var styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: colors.TEXT_COLOR
+    backgroundColor: colors.WHITE_COLOR
   },
   text_input: {
     fontSize: s(20),

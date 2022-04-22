@@ -398,10 +398,10 @@ const DriverDashboard = props => {
                 </TouchableOpacity>
                 <Text style={styles.Title}>Session</Text>
             </View>
-            {getloader ?
+            {/* {getloader ? */}
                 <MapView
                     style={{ flex: 1 }}
-                    visible={getloader}
+                    visible={true}
                     mapType={Platform.OS == "android" ? "standard" : "standard"}
                     region={region}
                     initialRegion={region}
@@ -409,21 +409,9 @@ const DriverDashboard = props => {
                     showsMyLocationButton={true}
                     followUserLocation={true}
                     zoomEnabled={true}
-                // onMapReady={goToInitialRegion.bind()}
-                // onPress={() => {
-                //     dispatch(settingActions.getLocation());
-                //     mapRef.current.animateToRegion({
-                //       latitude: myLatitude,
-                //       longitude: myLongitude,
-                //       latitudeDelta: 0.0922,
-                //       longitudeDelta: 0.0421,
-                //     });
-                //   }}
+                
                 >
-                    {/* <Marker coordinate={{ latitude: 22.7242284, longitude: 75.7237604 }}
-                pinColor={colors.PRIMARY_COLOR} // any color
-                title={"title"}
-                description={"description"} /> */}
+                    
                     {competencies_list.length > 0 &&
                         competencies_list.map((marker, index) => (
                             <Marker
@@ -438,7 +426,7 @@ const DriverDashboard = props => {
                             />
                         ))}
                 </MapView>
-                : null}
+                {/* : null} */}
             <Spinner
                 visible={getloader}
                 textContent={'Loading...'}

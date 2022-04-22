@@ -203,7 +203,7 @@ const Tracking = props => {
                         // pinColor={colors.PRIMARY_COLOR}
                         title={'Driver '}
                         description={''}
-                        image={require("./../../images/car.png")}
+                        image={require("./../../images/school bus.png")}
                     >
 
                     </Marker> : null}
