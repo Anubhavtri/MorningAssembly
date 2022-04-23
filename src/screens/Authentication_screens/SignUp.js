@@ -228,9 +228,12 @@ const SignUp = props => {
 
                         <Image
                             style={{
-                                resizeMode: 'stretch',
-                                height: '30%', width: '100%',
+                                margin:s(20),
+                                height: s(150),
                                 backgroundColor: 'transparent',
+                                alignContent: 'center',
+                                alignSelf: 'center',
+                                resizeMode: 'contain'
 
                             }}
                             source={require('../../images/logo.png')} />

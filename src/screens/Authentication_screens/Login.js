@@ -133,10 +133,12 @@ const Login = props => {
         <View style={styles.container}>
             <Image
                 style={{
-                    resizeMode: 'stretch',
-                    height: '30%', width: '100%',
+                    margin: s(50),
+                    height: s(150),
                     backgroundColor: 'transparent',
-
+                    alignContent: 'center',
+                    alignSelf: 'center',
+                    resizeMode: 'contain'
                 }}
                 source={require('../../images/logo.png')} />
             <Text style={styles.Title}>
@@ -145,13 +147,13 @@ const Login = props => {
             <Text style={styles.sectionTitle}>
                 Enter your mobile number to get {'\n'} Verification code
             </Text>
-            
+
             <View style={{ flexDirection: 'row', margin: s(10) }}>
                 <View style={{ flex: 1, backgroundColor: colors.PRIMARY_COLOR, justifyContent: 'center', borderTopLeftRadius: s(5), borderBottomLeftRadius: s(5), borderWidth: s(0.5) }}>
                     <Text style={{ fontFamily: fonts('poppinsMedium'), alignSelf: 'center', textAlign: 'center', justifyContent: 'center', color: colors.WHITE_COLOR, padding: s(10) }}>+91</Text>
                 </View>
-               
-  
+
+
                 <View style={{ borderTopRightRadius: s(5), borderBottomRightRadius: s(5), borderWidth: s(0.5), borderLeftWidth: 0, borderColor: colors.WHITE_COLOR, flex: 4 }}>
                     <TextInput
                         theme={{ colors: { primary: colors.WHITE_COLOR } }}
@@ -173,7 +175,7 @@ const Login = props => {
 
                     />
                 </View>
-               
+
             </View>
             <View style={{ flexDirection: 'row', margin: s(10) }}>
 

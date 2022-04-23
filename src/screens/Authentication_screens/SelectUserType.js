@@ -40,10 +40,12 @@ const SelectUserType = props => {
       <View style={styles.container}>
         <Image
           style={{
-            resizeMode: 'stretch',
-            height: '30%', width: '100%',
+            margin:s(50),
+            height: s(150),
             backgroundColor: 'transparent',
-
+            alignContent: 'center',
+            alignSelf: 'center',
+            resizeMode: 'contain'
           }}
           source={require('../../images/logo.png')} />
         <View style={{ alignSelf: 'center', width: '100%', justifyContent: 'center', marginTop: s(50) }}>
@@ -52,14 +54,14 @@ const SelectUserType = props => {
             title={'Driver'}
             onPress={() => {
               console.log('Login_button+++');
-              props.navigation.navigate('Login',{type:'2'});
+              props.navigation.navigate('Login', { type: '2' });
             }}
           />
           <Button
             title={'Parent'}
             onPress={() => {
               console.log('Login_button+++');
-              props.navigation.navigate('Login',{type:'1'});
+              props.navigation.navigate('Login', { type: '1' });
             }}
           />
 

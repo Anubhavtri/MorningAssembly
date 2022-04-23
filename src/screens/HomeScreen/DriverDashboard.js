@@ -284,8 +284,8 @@ const DriverDashboard = props => {
 
             })
             .catch(error => {
-                console.log('error>>>>>' + JSON.stringify(error));
-                
+                console.log('error>>>>>' + JSON.stringify(error.response));
+                Alert.alert(''+error?.response?.data?.message);
             });
     };
     const DriverStopSession = async (sStatus, cStatus) => {
