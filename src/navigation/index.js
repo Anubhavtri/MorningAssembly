@@ -11,7 +11,7 @@ const Stack = createNativeStackNavigator();
 const Navigation = props => {
   return (
     <>
-      <StatusBar backgroundColor="#AF72DC" />
+      <StatusBar backgroundColor="#ADD8E6" />
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator initialRouteName={'Unauthorized'}>
           <Stack.Screen

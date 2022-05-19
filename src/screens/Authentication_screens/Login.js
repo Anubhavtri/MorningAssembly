@@ -33,6 +33,7 @@ import messaging from '@react-native-firebase/messaging';
 import fonts from '../../utility/fonts';
 import GetLocation from 'react-native-get-location';
 import { KeyboardAccessoryView } from 'react-native-keyboard-accessory'
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const Login = props => {
     const [getloader, setloader] = useState(false);
@@ -226,7 +227,7 @@ const Login = props => {
 
                                 <Image
                                     style={{
-                                        height: s(20), width: s(30),
+                                        height: s(20), width: s(30),tintColor:Colors.PRIMARY_COLOR,
                                         marginRight: s(20), marginTop: s(5), alignSelf: 'center', alignContent: 'center'
                                     }}
                                     source={require('../../images/Active_eye_icon.png')} />

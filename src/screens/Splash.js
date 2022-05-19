@@ -50,7 +50,7 @@ const Splash = props => {
   return (
     <>
       {/*  <StatusBar barStyle="dark-content" /> */}
-      <StatusBar backgroundColor="#AF72DC" barStyle="light-content" />
+      <StatusBar backgroundColor="#ADD8E6" barStyle="light-content" />
       <View style={styles.container}>
         {(Platform.OS === 'ios') ? null :
 
