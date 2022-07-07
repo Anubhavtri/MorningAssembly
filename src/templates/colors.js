@@ -16,4 +16,5 @@ export default {
   THIRD_DOT: '#707070',
   GREEN: '#009E0F',
   RED: '#B40606',
+  BUTTON:'#059DC0'
 };

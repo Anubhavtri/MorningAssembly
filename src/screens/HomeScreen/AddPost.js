@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 
 import {
@@ -24,23 +24,112 @@ import { ms, mvs, s, vs } from 'react-native-size-matters';
 import { Button } from '../../component/UI';
 import colors from '../../templates/colors';
 import Spinner from 'react-native-loading-spinner-overlay';
+import APIName from '../../utility/api/apiName';
 
+import loggedInClient from '../../utility/apiAuth/loggedInClient';
 
 import fonts from '../../utility/fonts';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const AddPost = props => {
     const [getloader, setloader] = useState(false);
     const [competencies_list, setcompetencies_list] = React.useState([]);
-
-    useFocusEffect(
-        React.useCallback(() => {
-            console.log("useFocusEffect is working compitancylist>>")
+    const [updatedImageUrl, setUpdatedImageUrl] = useState('');
+    const [description, setdescription] = useState('');
 
 
-        }, [])
-    );
+
+    useEffect(() => {
+        if (props?.route?.params?.Image_Path != null) {
+            uploadFileOnBase64();
+        }
+    }, []);
+
+    const uploadFileOnBase64 = async () => {
+        try {
+            console.log("Add Post uploadFileOnBase64 is working");
+            const client = await loggedInClient();
+            var data = {
+                data: props?.route?.params?.Image_Path,
+                file_name: 'feed1.jpg',
+            };
+            console.log("uploadFileOnBase64", JSON.stringify(data));
+            client
+                .post(APIName.uploadFileBase64, data)
+                .then(response => {
+                    setloader(false);
+                    if (response.status == 200) {
+                        let data = response.data.data;
+                        setloader(false);
+                        try {
+                            setloader(false)
+                            console.log('Response data from compitancy_list' + JSON.stringify(data));
+                            setUpdatedImageUrl(data)
+
+                        } catch (error) {
+                            console.log('Exception' + error.test);
+                            setloader(false)
+                        }
+
+                        setloader(false);
+                    } else {
+
+                        setloader(false);
+                    }
+
+                })
+                .catch(error => {
+                    console.log('error' + error);
+                    setloader(false);
+                });
+        } catch (error) {
+            console.log("catch is working >>>>", JSON.stringify(error));
+            setloader(false);
+        }
+    };
+    const addFeed = async () => {
+        try {
+            const client = await loggedInClient();
+            var data = {
+                title: 'Test',
+                description: description,
+                url: updatedImageUrl,
+                feed_type: 'image'
+            };
+            console.log("addFeed", JSON.stringify(data));
+            client
+                .post(APIName.upload_feed, data)
+                .then(response => {
+                    setloader(false);
+                    if (response.status == 200) {
+                        let data = response.data.data;
+                        setloader(false);
+                        try {
+                            setloader(false)
+                            console.log('Response data from compitancy_list' + JSON.stringify(data));
 
 
+                        } catch (error) {
+                            console.log('Exception' + error.test);
+                            setloader(false)
+                        }
+
+                        setloader(false);
+                    } else {
+
+                        setloader(false);
+                    }
+
+                })
+                .catch(error => {
+                    console.log('error' + error);
+                    setloader(false);
+                });
+        } catch (error) {
+            console.log("catch is working >>>>", JSON.stringify(error));
+            setloader(false);
+        }
+    };
     return (
 
         <View style={styles.container}>
@@ -48,8 +137,6 @@ const AddPost = props => {
                 <TouchableOpacity
                     onPress={() => {
                         props.navigation.goBack();
-
-
                     }}>
                     <Image
                         source={require('../../images/left.png')}
@@ -79,27 +166,33 @@ const AddPost = props => {
                 </View>
 
             </View>
-            <TextInput
-                theme={{ colors: { primary: colors.WHITE_COLOR } }}
-                style={styles.input}
-                placeholder='What do you want to talk about?'
-                placeholderTextColor={colors.Gray_COLOR}
-                fontFamily={fonts('poppinsRegular')}
-                mode="outlined"
-                returnKeyType={'done'}
-                outlineColor={colors.WHITE_COLOR}
-                selectionColor='transparent'
-                underlineColor='transparent'
-                underlineColorAndroid='transparent'
-                keyboardType="text"
-            />
+
             <Image
                 source={{
                     uri: `data:image/jpeg;base64,${props?.route?.params?.Image_Path}`,
                 }}
                 style={{ height: s(205), width: '100%', }}
             />
-            <View style={{ flexDirection: 'row', alignContent: 'center', marginLeft: s(10),marginTop:s(10) }}>
+            <Text style={{marginTop: s(10),marginLeft: s(10),fontFamily:fonts('poppinsRegular'),color:colors.PRIMARY_TEXT_COLOR}}>Description</Text>
+            <View style={{ padding: s(2), marginLeft: s(10),marginRight:s(10), height: s(100), borderWidth: s(0.5), borderColor: colors.DARK_GRAY, borderRadius: s(5) }}>
+                <TextInput
+                    theme={{ colors: { primary: colors.WHITE_COLOR } }}
+                    style={styles.input}
+                    placeholder='What do you want to talk about?'
+                    placeholderTextColor={colors.Gray_COLOR}
+                    fontFamily={fonts('poppinsRegular')}
+                    mode="outlined"
+                    returnKeyType={'done'}
+                    outlineColor={colors.WHITE_COLOR}
+                    selectionColor='transparent'
+                    underlineColor='transparent'
+                    underlineColorAndroid='transparent'
+                    value={description}
+                    onChangeText={text => setdescription(text)}
+
+                />
+            </View>
+            {/* <View style={{ flexDirection: 'row', alignContent: 'center', marginLeft: s(10), marginTop: s(10) }}>
                 <Image
                     source={require('../../images/image-gallery.png')}
                     style={{ height: s(24), width: s(24), }}
@@ -109,7 +202,7 @@ const AddPost = props => {
                     fontFamily: fonts('poppinsSemibold'),
                 }}>Add Photo</Text>
             </View>
-            <View style={{ flexDirection: 'row', alignContent: 'center', marginLeft: s(10),marginTop:s(5) }}>
+            <View style={{ flexDirection: 'row', alignContent: 'center', marginLeft: s(10), marginTop: s(5) }}>
                 <Image
                     source={require('../../images/tag.png')}
                     style={{ height: s(20), width: s(20), }}
@@ -119,7 +212,7 @@ const AddPost = props => {
                     fontFamily: fonts('poppinsSemibold'),
                 }}>Tag People</Text>
             </View>
-            <View style={{ flexDirection: 'row', alignContent: 'center', marginLeft: s(10),marginTop:s(5) }}>
+            <View style={{ flexDirection: 'row', alignContent: 'center', marginLeft: s(10), marginTop: s(5) }}>
                 <Image
                     source={require('../../images/placeholder.png')}
                     style={{ height: s(20), width: s(20), }}
@@ -128,8 +221,8 @@ const AddPost = props => {
                     alignItems: 'center', alignSelf: 'center', marginLeft: s(10), color: colors.TEXT_COLOR,
                     fontFamily: fonts('poppinsSemibold'),
                 }}>Add a location</Text>
-            </View>
-            <View style={{ flexDirection: 'row', alignContent: 'center', marginLeft: s(10),marginTop:s(5) }}>
+            </View> */}
+            {/* <View style={{ flexDirection: 'row', alignContent: 'center', marginLeft: s(10), marginTop: s(5) }}>
                 <Image
                     source={require('../../images/sad.png')}
                     style={{ height: s(20), width: s(20), }}
@@ -138,24 +231,25 @@ const AddPost = props => {
                     alignItems: 'center', alignSelf: 'center', marginLeft: s(10), color: colors.TEXT_COLOR,
                     fontFamily: fonts('poppinsSemibold'),
                 }}>Feeling / Activity</Text>
-            </View>
-<View style={{alignContent:'flex-end',position:'absolute',bottom:0,right:0,margin:s(10)}}>
-            <TouchableOpacity
-                onPress={() => {
-                  console.log('only check');
-                  props.navigation.replace('Authorized', { name: 'Jane 123456789' });
-                }}>
-                <View style={styles.button_confirm}>
-                  <Text
-                    style={{
-                      color: colors.WHITE_COLOR,
-                      fontFamily: fonts('poppinsSemibold'),
+            </View> */}
+            <View style={{ alignContent: 'flex-end', position: 'absolute', bottom: 0, right: 0, margin: s(10) }}>
+                <TouchableOpacity
+                    onPress={() => {
+                        console.log('only check');
+                        // props.navigation.replace('Authorized', { name: 'Jane 123456789' });
+                        addFeed();
                     }}>
-                    {'Finish'}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-              </View>
+                    <View style={[styles.button_confirm]}>
+                        <Text
+                            style={{
+                                color: colors.WHITE_COLOR,
+                                fontFamily: fonts('poppinsSemibold'),
+                            }}>
+                            {'Finish'}
+                        </Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
         </View>
 
     );
@@ -219,13 +313,13 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         justifyContent: 'center',
         borderRadius: s(5),
-        backgroundColor: colors.PRIMARY_COLOR,
+        backgroundColor: colors.BUTTON,
         borderRadius: s(20),
         fontSize: s(12),
-        color:colors.WHITE_COLOR,
+        color: colors.WHITE_COLOR,
         alignContent: 'center',
         alignSelf: 'center',
-      },
+    },
 
 });
 // 

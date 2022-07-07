@@ -97,10 +97,11 @@ export default {
   tracking: 'tracking',
   schools: 'schools',
   school_vehicals: 'school-vehicles',
-
+  school_vehicals: 'school-vehicles',
   driver_session_notificaion:'driver-session-notificaion',
   end_driver_session:'end-driver-session',
-  customer_notification: 'customer-notification',
+  uploadFileBase64: 'upload-base64',
+  upload_feed:'upload-feed',
 
 
 
