@@ -102,6 +102,7 @@ export default {
   end_driver_session:'end-driver-session',
   uploadFileBase64: 'upload-base64',
   upload_feed:'upload-feed',
+  feeds:'feeds',
 
 
 

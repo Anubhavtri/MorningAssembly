@@ -16,88 +16,117 @@ import {
 } from 'react-native';
 
 import { s } from 'react-native-size-matters';
-
+import moment from 'moment';
 import colors from '../../templates/colors';
 import fonts from '../../utility/fonts';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { useFocusEffect } from '@react-navigation/native';
+import APIName from '../../utility/api/apiName';
+
+import loggedInClient from '../../utility/apiAuth/loggedInClient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import BottomSheet from '../UI/BottomSheet';
 const Home = props => {
     const [getloader, setloader] = useState(false);
-    const [latestskills_response, setlatestskills_response] = useState([]);
+    const [latestFeed_response, setlatestFeed_response] = useState([]);
     const [refreshing, setRefreshing] = React.useState(false);
+    const [modalVisible, setModalVisible] = React.useState(false);
 
-    const DATA = [
-        {
-            id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-            title: 'ddfdf',
-        },
-        {
-            id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-            title: 'Second Item',
-        },
-        {
-            id: '58694a0f-3da1-471f-bd96-145571e29d72',
-            title: 'Third Item',
-        },
-        {
-            id: '58694a0f-3da1-471f-bd96-145571e29d72',
-            title: 'Third Item',
-        },
-        {
-            id: '58694a0f-3da1-471f-bd96-145571e29d72',
-            title: 'Third Item',
-        },
-        {
-            id: '58694a0f-3da1-471f-bd96-145571e29d72',
-            title: 'Third Item',
-        },
-        
-       
-    ];
 
-    const RenderImage = (index) => {
-        if (index == 0) {
-            return <Image
-                source={require('../../images/1.jpg')}
-                style={{ height: s(205), width: '100%', }}
-            />
+
+    const getschool_code = async () => {
+        try {
+            const retrievedItem = await AsyncStorage.getItem('@school_code');
+            if (retrievedItem !== null) {
+                console.log('getAccessToken', 'Error retrieving data' + retrievedItem);
+                return retrievedItem;
+            }
+            return null;
+        } catch (error) {
+            console.log('getAccessToken', 'Error retrieving data');
         }
-        else if (index == 1) {
-            return <Image
-            source={require('../../images/2.jpg')}
-            style={{ height: s(205), width: '100%', }}
-        />
-        } else if (index == 2) {
-            return <Image
-            source={require('../../images/3.jpg')}
-            style={{ height: s(205), width: '100%', }}
-        />
-        }else if (index == 3) {
-            return <Image
-            source={require('../../images/4.jpg')}
-            style={{ height: s(205), width: '100%', }}
-        />
-        }else if (index == 4) {
-            return <Image
-            source={require('../../images/5.jpg')}
-            style={{ height: s(205), width: '100%', }}
-        />
-        }else if (index == 5) {
-            return <Image
-            source={require('../../images/6.jpg')}
-            style={{ height: s(205), width: '100%', }}
-        />
-        }else  {
-            return <Image
-            source={require('../../images/image_one.jpeg')}
-            style={{ height: s(205), width: '100%', }}
-        /> 
+    };
+    useEffect(() => {
+        getFeed();
+    }, []);
+
+    const getFeed = async () => {
+        try {
+            const client = await loggedInClient();
+            client
+                .get(APIName.feeds + '?schoolId=' + await getschool_code())
+                .then(response => {
+                    setloader(false);
+                    if (response.status == 200) {
+                        let data = response.data;
+                        setloader(false);
+                        try {
+                            setloader(false)
+                            setlatestFeed_response(data?.data);
+                            console.log('Response data from getFeed_list' + JSON.stringify(data));
+
+
+                        } catch (error) {
+                            console.log('Exception' + error);
+                            setloader(false)
+                        }
+
+                        setloader(false);
+                    } else {
+
+                        setloader(false);
+                    }
+
+                })
+                .catch(error => {
+                    console.log('error' + error);
+                    setloader(false);
+                });
+        } catch (error) {
+            console.log("catch is working >>>>", JSON.stringify(error));
+            setloader(false);
         }
+    };
+    // const addLike = async () => {
+    //     try {
+    //         const client = await loggedInClient();
+    //         client
+    //             .get(APIName.feeds + '?schoolId=' + await getschool_code())
+    //             .then(response => {
+    //                 setloader(false);
+    //                 if (response.status == 200) {
+    //                     let data = response.data;
+    //                     setloader(false);
+    //                     try {
+    //                         setloader(false)
+    //                         setlatestFeed_response(data?.data);
+    //                         console.log('Response data from getFeed_list' + JSON.stringify(data));
 
-    }
 
-    const renderItem_requested_skill = (item, index, props1) => {
-        { console.log('renderItem_requested_skill>>', index) }
+    //                     } catch (error) {
+    //                         console.log('Exception' + error);
+    //                         setloader(false)
+    //                     }
+
+    //                     setloader(false);
+    //                 } else {
+
+    //                     setloader(false);
+    //                 }
+
+    //             })
+    //             .catch(error => {
+    //                 console.log('error' + error);
+    //                 setloader(false);
+    //             });
+    //     } catch (error) {
+    //         console.log("catch is working >>>>", JSON.stringify(error));
+    //         setloader(false);
+    //     }
+    // };
+
+
+    const renderItem_requested_skill = (item, index) => {
         return (
             <TouchableOpacity
                 onPress={() =>
@@ -128,35 +157,54 @@ const Home = props => {
 
                         </View>
                         <View style={{ marginTop: s(1), marginLeft: s(5), flex: 4 }}>
-                            <Text style={styles.title}>Lorem ipsum</Text>
-                            <Text style={styles.input_type}>11 mintues ago</Text>
+                            <Text style={styles.title}>{item?.schoolId?.school_name}</Text>
+                            <Text style={styles.input_type}>{moment(item?.created_at).fromNow()}</Text>
                         </View>
                         <Image
                             source={require('../../images/dots.png')}
                             style={{ height: s(20), width: s(20), justifyContent: 'center', alignSelf: 'center' }}
                         />
                     </View>
-                    {/* <Image
-                            source={require('../../images/image_one.jpeg')}
-                            style={{ height: s(205), width: '100%', }}
-                        /> */}
-                    {RenderImage(index)}
+
+                    <Image
+                        source={{ uri: item?.url }}
+                        style={{ height: s(205), width: '100%', }}
+                    />
+
 
                     <View style={{ flexDirection: 'row', flex: 1, height: s(40) }}>
-                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                            <Image
-                                source={require('../../images/love.png')}
-                                style={{ height: s(20), width: s(20), }}
-                            />
-                            <Text style={{ marginLeft: s(5) }}>1 Likes</Text>
-                        </View>
+                        <TouchableOpacity
+                            style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}
+                            onPress={() => {
+                                addLike();
+                            }
+
+                            }>
+                            <View
+                                style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: 'red' }}
+                            >
+                                <Image
+                                    source={require('../../images/love.png')}
+                                    style={{ height: s(20), width: s(20), }}
+                                />
+                                <Text style={{ marginLeft: s(5) }}>{item?.like_count + ' Likes'}</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}
+                            onPress={() => {
+                               setModalVisible(true);
+                            }
+
+                            }>
                         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                             <Image
                                 source={require('../../images/chat.png')}
                                 style={{ height: s(20), width: s(20), }}
                             />
-                            <Text style={{ marginLeft: s(5) }}>0 Comments</Text>
+                            <Text style={{ marginLeft: s(5) }}>{item?.comments.length + ' Comments'}</Text>
                         </View>
+                        </TouchableOpacity>
                         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                             <Image
                                 source={require('../../images/share.png')}
@@ -174,13 +222,7 @@ const Home = props => {
 
 
 
-    useFocusEffect(
-        React.useCallback(() => {
-            console.log("first is runing useFocusEffect")
 
-
-        }, [])
-    );
 
     const onRefresh = React.useCallback(() => {
 
@@ -193,15 +235,14 @@ const Home = props => {
 
     return (
         <>
-
             <View style={{ flex: 1, backgroundColor: (Platform.OS === 'ios') ? colors.Defult_WHITE_COLOR : colors.WHITE_COLOR, margin: s(10), paddingBottom: s(3), width: '100%', marginBottom: s(40) }}>
                 <FlatList
                     style={{ paddingBottom: s(80), margin: s(3) }}
                     nestedScrollEnabled={true}
                     showsVerticalScrollIndicator={false}
-                    data={DATA}
+                    data={latestFeed_response}
                     renderItem={({ item, index }) => {
-                        return renderItem_requested_skill(item, index, props);
+                        return renderItem_requested_skill(item, index);
 
                     }
 
@@ -233,6 +274,15 @@ const Home = props => {
                     textContent={'Loading...'}
                     textStyle={styles.spinnerTextStyle}
                 />
+                <BottomSheet
+                    visible={modalVisible}
+                    visibleFun={() => setModalVisible(!modalVisible)}
+                    data={latestFeed_response}
+                    myCallback={(paramOne, paramTwo) => {
+                        console.log("ldfklkdlfkldkf");
+                    }}>
+
+                </BottomSheet>
             </View>
 
         </>

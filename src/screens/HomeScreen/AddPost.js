@@ -107,7 +107,7 @@ const AddPost = props => {
                         try {
                             setloader(false)
                             console.log('Response data from compitancy_list' + JSON.stringify(data));
-
+                            props.navigation.goBack();
 
                         } catch (error) {
                             console.log('Exception' + error.test);

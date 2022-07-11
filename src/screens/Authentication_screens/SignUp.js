@@ -41,6 +41,8 @@ const SignUp = props => {
     const [password, setPassword] = useState('');
     const [bus_no, setBus_no] = useState('Bus No.');
     const [school_code, setSchool_Code] = useState('School Code');
+    const [school_id, setSchool_id] = useState('');
+
     const [lat, setlat] = useState('');
     const [long, setlong] = useState('');
     const [DeviceToken, setDeviceToken] = useState('');
@@ -87,7 +89,7 @@ const SignUp = props => {
                 password: password,
                 role: props?.route?.params?.type,
                 bus_number: bus_no,
-                school_code: school_code,
+                school_code: school_id,
                 device_token: DeviceToken,
                 platform: Platform.OS,
                 lat: lat,
@@ -479,6 +481,7 @@ const SignUp = props => {
                 myCallback={(paramOne, paramTwo) => {
                     console.log('paramOne', paramOne + "<><><" + paramTwo);
                     setSchool_Code(paramOne);
+                    setSchool_id(paramTwo);
                     setloader(true);
                     setBus_no('Bus No.');
                     setModalVisible(false);

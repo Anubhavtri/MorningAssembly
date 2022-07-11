@@ -51,7 +51,6 @@ const User_Dashboard = props => {
 
 
         React.useCallback(() => {
-            console.log("useFocusEffect is working UserDashboard>>")
             setNotificationVisible(true)
             getStoreData();
 
@@ -59,7 +58,6 @@ const User_Dashboard = props => {
                 try {
                     const value = await AsyncStorage.getItem('@full_name');
                     setUsername(value)
-                    console.log("useFocusEffect is working UserDashboard>>", value)
                 } catch (e) {
                     console.log("useFocusEffect is working UserDashboard>>", JSON.stringify(e))
                 }

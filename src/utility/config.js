@@ -9,7 +9,9 @@ export const apiConfig = {
   //baseUrl: 'http://skills-api.providedigitaldevelopers.com/',
   //Live base URL
   //baseUrl: 'https://app-server-demo.herokuapp.com/',
-  baseUrl: 'https://doodle-care.herokuapp.com/',
+  //Live base URL
+  // baseUrl: 'https://doodle-care.herokuapp.com/',
+  baseUrl:'http://13.233.22.49:3000/',
   clientId: '1',
   
 };
