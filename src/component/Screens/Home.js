@@ -52,9 +52,11 @@ const Home = props => {
 
     const getFeed = async () => {
         try {
+            console.log("getFeed<><>"+await getschool_code());
             const client = await loggedInClient();
+            //+ await getschool_code()
             client
-                .get(APIName.feeds + '?schoolId=' + await getschool_code())
+                .get(APIName.feeds + '?schoolId=62c86b6bbff56195fee0a1eb' )
                 .then(response => {
                     setloader(false);
                     if (response.status == 200) {
@@ -181,7 +183,7 @@ const Home = props => {
 
                             }>
                             <View
-                                style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: 'red' }}
+                                style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}
                             >
                                 <Image
                                     source={require('../../images/love.png')}

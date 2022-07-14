@@ -85,12 +85,65 @@ const Login = props => {
                     console.log('Response data from axios' + JSON.stringify(response));
                     try {
                         setloader(false);
+                         storeData(props?.route?.params?.type);
+                        // storeUserData(response.data.data.id, response.data.data.school_code, response.data.data.bus_number, response.data.data.access_token, response.data.data.full_name);
+                        // 
+                        notifyMessage('Successfully SignIn !');
+                        props.navigation.replace('Authorized', { name: 'Jane 123456789' })
+                        //props.navigation.replace('Authorized', { name: 'Jane 123456789' });
+                    } catch (error) {
+                        console.log('Exception' + error.test);
+                    }
+
+                    setloader(false);
+                    //getData();
+                    /*   props.navigation.navigate('Dashboard', { name: 'Jane 123456789' }); */
+                })
+                .catch(error => {
+                    setloader(false);
+                    console.log('Response ' + JSON.stringify(error.response.data));
+                    console.log('Response ' + JSON.stringify(error.response.data.status));
+                    console.log(
+                        'Interceptor Error>>',
+                        JSON.stringify(error.response.data.message),
+                    );
+                    notifyMessage('' + error?.response?.data?.message);
+                });
+        }
+    };
+
+    const loginWithOtpHandler = async (mobile) => {
+        if (!(await NetworkUtils.isNetworkAvailable())) {
+            setloader(false);
+            notifyMessage(
+                'No Internet Connection! You are offline please check your internet connection',
+            );
+            return;
+        } else {
+            /* this.showLoader(); */
+            var data = {
+                mobileNo: mobile,
+                // password: password,
+                role: props?.route?.params?.type,
+                device_token: DeviceToken,
+                platform: Platform.OS
+            };
+            console.log('request', '' + JSON.stringify(data));
+            const lient = await loginRequest();
+            lient
+                .post(APIName.login_with_otp, data)
+                .then(response => {
+                    console.log('Response data from axios' + JSON.stringify(response));
+                    try {
+                        setloader(false);
                         storeData(props?.route?.params?.type);
                         storeUserData(response.data.data.id, response.data.data.school_code, response.data.data.bus_number, response.data.data.access_token, response.data.data.full_name);
                         //props.navigation.navigate('OTP', { name: 'Jane 123456789' })
                         notifyMessage('Successfully SignIn !');
-                        props.navigation.replace('Authorized', { name: 'Jane 123456789' })
-                        //props.navigation.replace('Authorized', { name: 'Jane 123456789' });
+                       // props.navigation.replace('Authorized', { name: 'Jane 123456789' })
+                       props.navigation.navigate('OTP', { type: props?.route?.params?.type,mobile:mobile,
+                       })
+
                     } catch (error) {
                         console.log('Exception' + error.test);
                     }
@@ -164,7 +217,7 @@ const Login = props => {
                         fontFamily={fonts('poppinsRegular')}
                         mode="outlined"
                         multiline={true}
-                        returnKeyType={'next'}
+                        returnKeyType={'done'}
                         outlineColor={colors.WHITE_COLOR}
                         selectionColor='transparent'
                         underlineColor='transparent'
@@ -172,13 +225,13 @@ const Login = props => {
                         value={email}
                         onChangeText={text => setEmail(text)}
                         keyboardType="numeric"
-                        onSubmitEditing={() => ref_input2.current.focus()}
+                       // onSubmitEditing={() => ref_input2.current.focus()}
 
                     />
                 </View>
 
             </View>
-            <View style={{ flexDirection: 'row', margin: s(10) }}>
+            {/* <View style={{ flexDirection: 'row', margin: s(10) }}>
 
                 <View style={{ borderTopLeftRadius: s(5), borderBottomLeftRadius: s(5), borderTopRightRadius: s(5), borderBottomRightRadius: s(5), borderWidth: s(0.5), borderLeftWidth: s(0.5), borderColor: colors.WHITE_COLOR, flex: 4 }}>
                     <TextInput
@@ -220,14 +273,10 @@ const Login = props => {
                                 setHidePass(false);
                             }}>
                             <View style={{ height: s(50), width: s(40), alignSelf: 'center', justifyContent: 'center' }}>
-                                {/* <Disable_eye_Icon
-                    style={{ marginRight: s(20), marginTop: s(5), alignSelf: 'center', alignContent: 'center' }}
-
-                /> */}
 
                                 <Image
                                     style={{
-                                        height: s(20), width: s(30),tintColor:Colors.PRIMARY_COLOR,
+                                        height: s(20), width: s(30), tintColor: Colors.PRIMARY_COLOR,
                                         marginRight: s(20), marginTop: s(5), alignSelf: 'center', alignContent: 'center'
                                     }}
                                     source={require('../../images/Active_eye_icon.png')} />
@@ -241,10 +290,7 @@ const Login = props => {
                             }}>
                             <View style={{ height: s(50), width: s(40), alignSelf: 'center', justifyContent: 'center' }}>
 
-                                {/* <Active_eye_Icon
-                    style={{ marginRight: s(20), marginTop: s(5), alignSelf: 'center', alignContent: 'center' }}
-
-                /> */}
+                              
                                 <Image
                                     style={{
                                         height: s(20), width: s(30), marginRight: s(20), marginTop: s(5),
@@ -257,9 +303,9 @@ const Login = props => {
                         </TouchableOpacity>
                     )}
                 </View>
-            </View>
+            </View> */}
 
-            <View style={styles.sign_up_view}>
+            {/* <View style={styles.sign_up_view}>
                 <Text style={styles.sign_up}>Don't have an account ?</Text>
                 <TouchableOpacity
                     onPress={() => {
@@ -267,7 +313,7 @@ const Login = props => {
                     }}>
                     <Text style={{ color: colors.WHITE_COLOR, fontSize: s(12), fontFamily: fonts('poppinsBold'), }}>Sign Up</Text>
                 </TouchableOpacity>
-            </View>
+            </View> */}
 
 
 
@@ -286,7 +332,8 @@ const Login = props => {
 
                     if (email != '' && email.length == 10) {
                         setloader(true);
-                        loginHandler(email);
+                        //loginHandler(email);
+                        loginWithOtpHandler(email);
                     } else {
                         console.log('if is not working');
                         // notifyMessage('field is not Empty !')

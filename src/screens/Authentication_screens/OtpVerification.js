@@ -20,12 +20,15 @@ import {
 } from 'react-native';
 import { Button } from '../../component/UI';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import loginRequest from '../../utility/apiAuth/tokenClient';
 
 import { ms, mvs, s, vs } from 'react-native-size-matters';
 import fonts from '../../utility/fonts';
 import Notify from '../../images/back.svg';
 import colors from '../../templates/colors';
 import * as RootNavigation from '../../RootNavigation';
+import NetworkUtils from '../../utility/apiAuth/NetworkUtils';
+import apiName from '../../utility/api/apiName';
 
 
 const OtpVerification = props => {
@@ -34,12 +37,87 @@ const OtpVerification = props => {
     const ref_input2 = useRef();
     const ref_input3 = useRef();
     const ref_input4 = useRef();
+    const [firstOtp, setfirstOtp] = useState('');
+    const [secondOtp, setsecondOtp] = useState('');
+    const [thirdOtp, setthirdOtp] = useState('');
+    const [forthOtp, setforthOtp] = useState('');
+    const [getloader, setloader] = useState(false);
+
+
     useFocusEffect(
         React.useCallback(() => {
             console.log("useFocusEffect is working compitancylist>>")
             getStoreData();
         }, [])
     );
+    const storeData = async value => {
+        try {
+            await AsyncStorage.setItem('@storage_Key', value);
+        } catch (e) {
+            // saving error
+        }
+    };
+    const storeUserData = async (value, School_code, Bus_no, Storage_Key, full_name) => {
+        try {
+            await AsyncStorage.setItem('@user_id', value);
+            await AsyncStorage.setItem('@school_code', School_code);
+            await AsyncStorage.setItem('@bus_no', Bus_no);
+            await AsyncStorage.setItem('@access_token', 'Bearer ' + Storage_Key);
+            await AsyncStorage.setItem('@full_name', full_name);
+    
+        } catch (e) {
+            // saving error
+        }
+    };
+
+    const loginWithOtpHandler = async () => {
+        if (!(await NetworkUtils.isNetworkAvailable())) {
+            setloader(false);
+            notifyMessage(
+                'No Internet Connection! You are offline please check your internet connection',
+            );
+            return;
+        } else {
+            var data = {
+                mobileNo: props?.route?.params?.mobile,
+                login_otp: firstOtp + secondOtp + thirdOtp + forthOtp,
+
+            };
+            console.log('request', '' + JSON.stringify(data));
+            const lient = await loginRequest();
+            lient
+                .post(apiName.verify_otp, data)
+                .then(response => {
+                    console.log('Response data from axios OTP' + JSON.stringify(response));
+                    setloader(false);
+                    try {
+                    
+                        storeUserData(response.data.data.id, response.data.data.school_code, response.data.data.bus_number, response.data.data.access_token, response.data.data.full_name);
+                     
+                        notifyMessage('OTP verified Successfully!');
+                        // props.navigation.replace('Authorized', { name: 'Jane 123456789' })
+                        props.navigation.replace('Authorized', { name: 'Jane 123456789' })
+
+                    } catch (error) {
+                        console.log('Exception' + error.test);
+                    }
+
+                    
+                    //getData();
+                    /*   props.navigation.navigate('Dashboard', { name: 'Jane 123456789' }); */
+                })
+                .catch(error => {
+                    setloader(false);
+                    console.log('Response ' + JSON.stringify(error.response.data));
+                    console.log('Response ' + JSON.stringify(error.response.data.status));
+                    console.log(
+                        'Interceptor Error>>',
+                        JSON.stringify(error.response.data.message),
+                    );
+                    notifyMessage('' + error?.response?.data?.message);
+                });
+        }
+    };
     const getStoreData = async value => {
         try {
             const value = await AsyncStorage.getItem('@storage_Key');
@@ -81,43 +159,70 @@ const OtpVerification = props => {
                 <View style={styles.row}>
                     <TextInput style={styles.inputcvv} maxLength={1}
                         returnKeyType={'next'}
+                        keyboardType="numeric"
+                        onChangeText={text =>{ setfirstOtp(text)
+                            ref_input2.current.focus()}}
                         onSubmitEditing={() => ref_input2.current.focus()} />
 
                     <TextInput style={styles.inputcvv} maxLength={1}
                         returnKeyType={'next'}
+                        keyboardType="numeric"
                         onSubmitEditing={() => ref_input3.current.focus()}
+                        onChangeText={text => {setsecondOtp(text)
+                            ref_input3.current.focus()}}
                         ref={ref_input2} />
 
                     <TextInput style={styles.inputcvv} maxLength={1}
                         returnKeyType={'next'}
+                        keyboardType="numeric"
                         onSubmitEditing={() => ref_input4.current.focus()}
+                        onChangeText={text => {setthirdOtp(text)
+                            ref_input4.current.focus()}}
                         ref={ref_input3} />
 
                     <TextInput style={styles.inputcvv} maxLength={1}
                         returnKeyType={'done'}
+                        keyboardType="numeric"
+                        onChangeText={text => setforthOtp(text)}
                         ref={ref_input4} />
                 </View>
                 <Button
                     title={'Confirm'}
                     onPress={() => {
                         console.log('Login_button+++');
-                       
-                        // if (driver) {
-                            props.navigation.replace('Authorized', { name: 'Jane 123456789' })
-                        // } else {
-                        //     props.navigation.replace('Authorized', {screen: 'DriverDashboardStack'});
-                            
-                        // }
+                        if (firstOtp != '' && secondOtp != '' && thirdOtp != '' && forthOtp != '') {
+                            loginWithOtpHandler();
+                        } else {
+                            notifyMessage('Please Enter Valide OTP !');
+                        }
+                        // // if (driver) {
+                        //     props.navigation.replace('Authorized', { name: 'Jane 123456789' })
+                        // // } else {
+                        // //     props.navigation.replace('Authorized', {screen: 'DriverDashboardStack'});
+
+                        // // }
                     }}
                 />
 
-
+                {getloader ?
+                    <Spinner
+                        visible={true}
+                        textContent={'Loading...'}
+                        textStyle={styles.spinnerTextStyle}
+                    /> : null}
 
 
             </SafeAreaView>
 
         </>
     );
+    function notifyMessage(msg) {
+        if (Platform.OS === 'android') {
+            ToastAndroid.show(msg, ToastAndroid.SHORT);
+        } else {
+            alert(msg);
+        }
+    }
 };
 const styles = StyleSheet.create({
     container: {

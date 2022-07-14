@@ -48,8 +48,6 @@ const User_Dashboard = props => {
 
     const [modalVisible, setModalVisible] = useState(false);
     useFocusEffect(
-
-
         React.useCallback(() => {
             setNotificationVisible(true)
             getStoreData();

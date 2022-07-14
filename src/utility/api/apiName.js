@@ -1,5 +1,7 @@
 export default {
   login: 'login',
+  login_with_otp:'login-with-otp',
+  verify_otp:'verify-otp',
   register: 'register',
   browse_skills: 'browseskill',
   dashboard: 'dashboard',
