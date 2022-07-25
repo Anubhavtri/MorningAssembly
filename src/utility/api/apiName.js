@@ -105,6 +105,11 @@ export default {
   uploadFileBase64: 'upload-base64',
   upload_feed:'upload-feed',
   feeds:'feeds',
+  comment:'comment',
+  add_view:'add-view',
+  add_like:'add-like',
+  profile:'profile/',
+
 
 
 

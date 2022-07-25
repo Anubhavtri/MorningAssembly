@@ -188,7 +188,7 @@ loginClient.interceptors.response.use(
       console.log('Interceptor Response', response.status);
 
       if (response.status === 401) {
-       let res = await callRefreshToken(response.config);
+       //let res = await callRefreshToken(response.config);
 
        return res;
       } else {
@@ -206,10 +206,10 @@ loginClient.interceptors.response.use(
   async error => {
     //console.log('Interceptor Error', error.response);
     // console.log('Interceptor Error', error.response.status);
-     // console.log('Interceptor Error', JSON.stringify(error));
+      console.log('Interceptor Error>>', JSON.stringify(error));
     try {
       if (error.response.status === 401) {
-        const res = await callRefreshToken(error.response.config);
+     //   const res = await callRefreshToken(error.response.config);
 
         return res;
       } else {

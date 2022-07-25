@@ -24,7 +24,9 @@ import Profile from '../../images/profile.svg';
 import fonts from '../../utility/fonts';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Defult_User_Icon from '../../images/user-svgrepo-com.svg';
-import Tracking from '../../screens/HomeScreen/Tracking'
+import Tracking from '../../screens/HomeScreen/Tracking';
+import EditProfile from '../../screens/HomeScreen/EditProfile'
+
 import APIName from '../../utility/api/apiName';
 import loggedInClient from '../../utility/apiAuth/loggedInClient';
 import TrackStack from '../../navigation/stack/TrackStack';
@@ -43,10 +45,14 @@ const User_Dashboard = props => {
     const [tabname, settabname] = useState('Home');
     const [NotificationVisible, setNotificationVisible] = React.useState(false);
     const [username, setUsername] = useState('');
+    const [schoolcode, setSchoolCode] = useState(false);
+
 
     const [driver, setdriver] = React.useState(false);
 
     const [modalVisible, setModalVisible] = useState(false);
+    const [updateprofilemodalVisible, setupdateprofileModalVisible] = useState(false);
+
     useFocusEffect(
         React.useCallback(() => {
             setNotificationVisible(true)
@@ -118,14 +124,41 @@ const User_Dashboard = props => {
         async function fetchData() {
             // You can await here
             const response = await getfull_name();
-
+            const response1 = await getschool_code();
             // ...
         }
         fetchData();
     }, []);
+
+    const getschool_code = async () => {
+        try {
+            const retrievedItem = await AsyncStorage.getItem('@school_code');
+
+            if (retrievedItem == null) {
+                setSchoolCode(true);
+                setupdateprofileModalVisible(true);
+            } else {
+                if (retrievedItem != "") {
+                    setSchoolCode(false);
+                    setupdateprofileModalVisible(false);
+                } else {
+                    setSchoolCode(true);
+                    setupdateprofileModalVisible(true);
+                }
+            }
+            return retrievedItem;
+        } catch (error) {
+            console.log('getAccessToken', 'Error retrieving data');
+        }
+    };
+
+
     const CustomDrawerContent = (props) => {
         return (
+
             <View>
+                {/* {console.log("getschool_code>>>" + schoolcode)}
+                {schoolcode ? setupdateprofileModalVisible(true) : null} */}
                 <View
                     style={{
                         width: s(90),
@@ -145,11 +178,12 @@ const User_Dashboard = props => {
                 {/* <Text style={styles.email}>xyz@gmail.com</Text> */}
                 <TouchableOpacity
                     onPress={() => {
-                        try{
-                        setVisibleTab('Requested')
-                        settabname('Home');
-                        props.navigation.closeDrawer()}
-                        catch(error){}
+                        try {
+                            setVisibleTab('Requested')
+                            settabname('Home');
+                            props.navigation.closeDrawer()
+                        }
+                        catch (error) { }
 
                     }}>
                     <View style={{ flexDirection: 'row', margin: s(10) }}>
@@ -204,6 +238,25 @@ const User_Dashboard = props => {
                     />
                     <Text style={{ fontFamily: fonts('poppinsMedium'), textAlign: 'center', alignSelf: 'center', color: colors.WHITE_COLOR, marginLeft: s(5) }}>Privacy Policy </Text>
                 </View>
+                <TouchableOpacity
+                    onPress={() => {
+                        console.log("working C");
+                        setNotificationVisible(false)
+                        // setVisibleTab('startSession')
+                        props.navigation.closeDrawer();
+                        props.navigation.navigate('EditProfile');
+
+
+
+                    }}>
+                    <View style={{ flexDirection: 'row', margin: s(10) }}>
+                        <Image
+                            source={require('../../images/compliant.png')}
+                            style={{ tintColor: colors.WHITE_COLOR, height: s(20), width: s(20) }}
+                        />
+                        <Text style={{ fontFamily: fonts('poppinsMedium'), textAlign: 'center', alignSelf: 'center', color: colors.WHITE_COLOR, marginLeft: s(5) }}>Edit Profile </Text>
+                    </View>
+                </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => {
                         props.navigation.closeDrawer()
@@ -352,6 +405,18 @@ const User_Dashboard = props => {
                         }}
                     />
 
+                    <CustomeDialog
+                        visible={updateprofilemodalVisible}
+                        visibleFun={() => setupdateprofileModalVisible(!updateprofilemodalVisible)}
+                        title="Update Profile"
+                        sub_title="Your Profile is not updated .Please Update now"
+                        myCallback={(paramOne, paramTwo) => {
+                            console.log('paramOne', paramOne);
+                            setupdateprofileModalVisible(false);
+                            props.navigation.navigate('EditProfile');
+                        }}
+                    />
+
 
                 </View>
 
@@ -418,6 +483,11 @@ const User_Dashboard = props => {
                     <Drawer.Screen
                         name="Tracking"
                         component={TrackStack}
+                        options={{ headerShown: false }}
+                    />
+                    <Drawer.Screen
+                        name="EditProfile"
+                        component={EditProfile}
                         options={{ headerShown: false }}
                     />
                     <Drawer.Screen

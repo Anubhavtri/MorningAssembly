@@ -59,6 +59,7 @@ const OtpVerification = props => {
     };
     const storeUserData = async (value, School_code, Bus_no, Storage_Key, full_name) => {
         try {
+            console.log("storeUserData>>"+value+"<School_code>"+School_code+"<Storage_Key>"+Storage_Key+"<full_name>"+full_name);
             await AsyncStorage.setItem('@user_id', value);
             await AsyncStorage.setItem('@school_code', School_code);
             await AsyncStorage.setItem('@bus_no', Bus_no);
@@ -81,6 +82,7 @@ const OtpVerification = props => {
             var data = {
                 mobileNo: props?.route?.params?.mobile,
                 login_otp: firstOtp + secondOtp + thirdOtp + forthOtp,
+                role: props?.route?.params?.type,
 
             };
             console.log('request', '' + JSON.stringify(data));
@@ -91,12 +93,13 @@ const OtpVerification = props => {
                     console.log('Response data from axios OTP' + JSON.stringify(response));
                     setloader(false);
                     try {
-                    
-                        storeUserData(response.data.data.id, response.data.data.school_code, response.data.data.bus_number, response.data.data.access_token, response.data.data.full_name);
+                        storeData(props?.route?.params?.type);
+                        storeUserData(response.data.data._id, response.data.data.school_code, response.data.data.bus_number, response.data.data.access_token, response.data.data.full_name);
                      
                         notifyMessage('OTP verified Successfully!');
                         // props.navigation.replace('Authorized', { name: 'Jane 123456789' })
                         props.navigation.replace('Authorized', { name: 'Jane 123456789' })
+                        //props.navigation.navigate('SignUp', { type: props?.route?.params?.type});
 
                     } catch (error) {
                         console.log('Exception' + error.test);

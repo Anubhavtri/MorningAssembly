@@ -33,8 +33,10 @@ import fonts from '../../utility/fonts';
 import GetLocation from 'react-native-get-location';
 import SchoollistDialog from '../../component/UI/SchoollistDialog';
 import SchoolVehiclelistDialog from '../../component/UI/SchoolVehicleDialog';
+import loggedInClient from '../../utility/apiAuth/loggedInClient';
 
-const SignUp = props => {
+
+const EditProfile = props => {
     const [getloader, setloader] = useState(false);
     const [name, setName] = useState('');
     const [mobile, setMobile] = useState('');
@@ -74,6 +76,18 @@ const SignUp = props => {
             console.log('error-------------', error);
         }
     };
+    const getUser_id = async () => {
+        try {
+            const retrievedItem = await AsyncStorage.getItem('@user_id');
+            if (retrievedItem !== null) {
+                console.log('getAccessToken', 'Error retrieving data' + retrievedItem);
+                return retrievedItem;
+            }
+            return null;
+        } catch (error) {
+            console.log('getAccessToken', 'Error retrieving data');
+        }
+    };
     const loginHandler = async () => {
         if (!(await NetworkUtils.isNetworkAvailable())) {
             setloader(false);
@@ -86,7 +100,7 @@ const SignUp = props => {
             var data = {
                 full_name: name,
                 mobileNo: mobile,
-                password: password,
+                // password: password,
                 role: props?.route?.params?.type,
                 bus_number: bus_no,
                 school_code: school_id,
@@ -96,19 +110,19 @@ const SignUp = props => {
                 long: long,
             };
             console.log('request', '' + JSON.stringify(data));
-            const lient = await loginRequest();
+            const lient = await loggedInClient();
             lient
-                .post(APIName.register, data)
+                .put(APIName.profile + await getUser_id(), data)
                 .then(response => {
 
                     try {
                         console.log('Response data from axios', JSON.stringify(response.data));
                         setloader(false);
                         // storeData(props?.route?.params?.type);
-                        // storeUserData(response.data.data.id, response.data.data.school_code, response.data.data.bus_number, response.data.data.access_token, response.data.data.full_name);
+                        storeUserData(school_id, bus_no, name);
                         notifyMessage('Profile Updated Successfully !');
                         // props.navigation.navigate('OTP', { name: 'Jane 123456789' })
-                        props.navigation.replace('Authorized', { name: 'Jane 123456789' })
+                        props.navigation.goBack();
                         //props.navigation.replace('Authorized', { name: 'Jane 123456789' });
                     } catch (error) {
                         console.log('Exception' + error.test);
@@ -230,7 +244,7 @@ const SignUp = props => {
 
                         <Image
                             style={{
-                                margin:s(20),
+                                margin: s(20),
                                 height: s(150),
                                 backgroundColor: 'transparent',
                                 alignContent: 'center',
@@ -240,7 +254,7 @@ const SignUp = props => {
                             }}
                             source={require('../../images/logo.png')} />
                         <Text style={styles.Title}>
-                            Sign Up
+                            Update Profile
                         </Text>
 
                         <View style={{ flexDirection: 'row', margin: s(10) }}>
@@ -290,7 +304,7 @@ const SignUp = props => {
                                 />
                             </View>
                         </View>
-                        <View style={{ flexDirection: 'row', margin: s(10) }}>
+                        {/* <View style={{ flexDirection: 'row', margin: s(10) }}>
 
                             <View style={{ borderTopLeftRadius: s(5), borderBottomLeftRadius: s(5), borderTopRightRadius: s(5), borderBottomRightRadius: s(5), borderWidth: s(0.5), borderLeftWidth: s(0.5), borderColor: colors.WHITE_COLOR, flex: 4 }}>
                                 <TextInput
@@ -332,10 +346,7 @@ const SignUp = props => {
                                             setHidePass(false);
                                         }}>
                                         <View style={{ height: s(50), width: s(40), alignSelf: 'center', justifyContent: 'center' }}>
-                                            {/* <Disable_eye_Icon
-                                                style={{ marginRight: s(20), marginTop: s(5), alignSelf: 'center', alignContent: 'center' }}
 
-                                            /> */}
 
                                             <Image
                                                 style={{
@@ -353,10 +364,7 @@ const SignUp = props => {
                                         }}>
                                         <View style={{ height: s(50), width: s(40), alignSelf: 'center', justifyContent: 'center' }}>
 
-                                            {/* <Active_eye_Icon
-                                                style={{ marginRight: s(20), marginTop: s(5), alignSelf: 'center', alignContent: 'center' }}
 
-                                            /> */}
                                             <Image
                                                 style={{
                                                     height: s(20), width: s(30), marginRight: s(20), marginTop: s(5),
@@ -369,7 +377,7 @@ const SignUp = props => {
                                     </TouchableOpacity>
                                 )}
                             </View>
-                        </View>
+                        </View> */}
                         <View style={{ flexDirection: 'row', margin: s(10) }}>
 
                             <View style={{ borderTopLeftRadius: s(5), borderBottomLeftRadius: s(5), borderTopRightRadius: s(5), borderBottomRightRadius: s(5), borderWidth: s(0.5), borderLeftWidth: s(0.5), borderColor: colors.WHITE_COLOR, flex: 4 }}>
@@ -443,9 +451,11 @@ const SignUp = props => {
                                     notifyMessage('This field is not Empty !');
                                 } else if (mobile == '' || mobile.length != 10) {
                                     notifyMessage('Incorrect Mobile Number !');
-                                } else if (password == '') {
-                                    notifyMessage('This field is not Empty !');
-                                } else if (bus_no == '' || bus_no == 'Bus No.') {
+                                 } 
+                                 //else if (password == '') {
+                                //     notifyMessage('This field is not Empty !');
+                                // }
+                                 else if (bus_no == '' || bus_no == 'Bus No.') {
                                     notifyMessage('This field is not Empty !');
                                 } else if (school_code == '' || school_code == 'School Code') {
                                     notifyMessage('This field is not Empty !');
@@ -629,12 +639,11 @@ const storeData = async value => {
         // saving error
     }
 };
-const storeUserData = async (value, School_code, Bus_no, Storage_Key, full_name) => {
+const storeUserData = async ( School_code, Bus_no, full_name) => {
     try {
-        await AsyncStorage.setItem('@user_id', value);
+       
         await AsyncStorage.setItem('@school_code', School_code);
         await AsyncStorage.setItem('@bus_no', Bus_no);
-        await AsyncStorage.setItem('@access_token', 'Bearer ' + Storage_Key);
         await AsyncStorage.setItem('@full_name', full_name);
 
     } catch (e) {
@@ -652,4 +661,4 @@ const StoreDeviceToken = async token => {
         console.log('error>>>', JSON.stringify(e));
     }
 };
-export default SignUp;
+export default EditProfile;

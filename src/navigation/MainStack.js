@@ -5,6 +5,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
  import DriverDashboardStack from './stack/DriverDashboardStack';
  import AddPostStack from './stack/AddPostStack';
  import Notification from './stack/NotificaationStack';
+ import EditProfile from './stack/EditProfileStack';
+
 // import MySkill from './stack/MySkillStack';
 // import PrivacyPolicy from './stack/PrivacyPolicyStack';
 // import EditProfile from './stack/EditProfileStack';
@@ -34,6 +36,11 @@ const MainStack = () => {
        <Stack.Screen
         name="NotificationStack"
         component={Notification}
+        options={{headerShown: false}}
+      />
+       <Stack.Screen
+        name="EditProfileStack"
+        component={EditProfile}
         options={{headerShown: false}}
       />
       {/* <Stack.Screen

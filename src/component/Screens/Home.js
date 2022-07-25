@@ -29,16 +29,21 @@ import BottomSheet from '../UI/BottomSheet';
 const Home = props => {
     const [getloader, setloader] = useState(false);
     const [latestFeed_response, setlatestFeed_response] = useState([]);
+    const [FeedComment_response, setlFeedComment_response] = useState([]);
     const [refreshing, setRefreshing] = React.useState(false);
     const [modalVisible, setModalVisible] = React.useState(false);
+    const [selectedFeed_id, setselectedFeed_id] = useState('');
+    const [like, setlike] = useState(false);
+    const [schoolcode, setSchoolCode] = useState(false);
 
 
 
-    const getschool_code = async () => {
+    const getAccessToken = async () => {
         try {
-            const retrievedItem = await AsyncStorage.getItem('@school_code');
+            const retrievedItem = await AsyncStorage.getItem('@access_token');
             if (retrievedItem !== null) {
                 console.log('getAccessToken', 'Error retrieving data' + retrievedItem);
+
                 return retrievedItem;
             }
             return null;
@@ -46,17 +51,41 @@ const Home = props => {
             console.log('getAccessToken', 'Error retrieving data');
         }
     };
+    const getschool_code = async () => {
+        try {
+            const retrievedItem = await AsyncStorage.getItem('@school_code');
+            
+            return retrievedItem;
+        } catch (error) {
+            console.log('getAccessToken', 'Error retrieving data');
+        }
+    };
     useEffect(() => {
-        getFeed();
+        async function fetchData() {
+            const response1 = await getschool_code();
+            console.log("response1>>>"+response1);
+            if (response1 == null) {
+                setSchoolCode(false);
+            } else {
+                setSchoolCode(true);
+                getFeed();
+            }
+        }
+        fetchData();
     }, []);
+    
 
     const getFeed = async () => {
         try {
-            console.log("getFeed<><>"+await getschool_code());
+            setloader(true);
+            //console.log("getFeed<><>"+await getschool_code());
+            // console.log("getFeed<><>++"+await getAccessToken());
+
+
             const client = await loggedInClient();
-            //+ await getschool_code()
+
             client
-                .get(APIName.feeds + '?schoolId=62c86b6bbff56195fee0a1eb' )
+                .get(APIName.feeds + '?school_code=SCH78')
                 .then(response => {
                     setloader(false);
                     if (response.status == 200) {
@@ -89,46 +118,51 @@ const Home = props => {
             setloader(false);
         }
     };
-    // const addLike = async () => {
-    //     try {
-    //         const client = await loggedInClient();
-    //         client
-    //             .get(APIName.feeds + '?schoolId=' + await getschool_code())
-    //             .then(response => {
-    //                 setloader(false);
-    //                 if (response.status == 200) {
-    //                     let data = response.data;
-    //                     setloader(false);
-    //                     try {
-    //                         setloader(false)
-    //                         setlatestFeed_response(data?.data);
-    //                         console.log('Response data from getFeed_list' + JSON.stringify(data));
+    const addLike = async () => {
+        try {
+            var data = {
+                feedId: selectedFeed_id,
+            };
+            console.log("addLike>>>" + JSON.stringify(data));
+            const client = await loggedInClient();
+            client
+                .post(APIName.add_like, data)
+                .then(response => {
+                    setloader(false);
+                    if (response.status == 200) {
+                        let data = response.data;
+                        setloader(false);
+                        try {
+                            setloader(false)
+                            getFeed();
+                            console.log('Response data from getFeed_list' + JSON.stringify(data));
 
 
-    //                     } catch (error) {
-    //                         console.log('Exception' + error);
-    //                         setloader(false)
-    //                     }
+                        } catch (error) {
+                            console.log('Exception' + error);
+                            setloader(false)
+                        }
 
-    //                     setloader(false);
-    //                 } else {
+                        setloader(false);
+                    } else {
 
-    //                     setloader(false);
-    //                 }
+                        setloader(false);
+                    }
 
-    //             })
-    //             .catch(error => {
-    //                 console.log('error' + error);
-    //                 setloader(false);
-    //             });
-    //     } catch (error) {
-    //         console.log("catch is working >>>>", JSON.stringify(error));
-    //         setloader(false);
-    //     }
-    // };
+                })
+                .catch(error => {
+                    console.log('error' + error);
+                    setloader(false);
+                });
+        } catch (error) {
+            console.log("catch is working >>>>", JSON.stringify(error));
+            setloader(false);
+        }
+    };
 
 
     const renderItem_requested_skill = (item, index) => {
+
         return (
             <TouchableOpacity
                 onPress={() =>
@@ -178,6 +212,9 @@ const Home = props => {
                         <TouchableOpacity
                             style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}
                             onPress={() => {
+                                setselectedFeed_id(item._id);
+                                setloader(true);
+                                setlike(true);
                                 addLike();
                             }
 
@@ -185,27 +222,33 @@ const Home = props => {
                             <View
                                 style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}
                             >
-                                <Image
-                                    source={require('../../images/love.png')}
+                                {like ? <Image
+                                    source={require('../../images/fill_like.png')}
                                     style={{ height: s(20), width: s(20), }}
-                                />
+                                /> :
+                                    <Image
+                                        source={require('../../images/love.png')}
+                                        style={{ height: s(20), width: s(20), }}
+                                    />}
                                 <Text style={{ marginLeft: s(5) }}>{item?.like_count + ' Likes'}</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}
                             onPress={() => {
-                               setModalVisible(true);
+                                setselectedFeed_id(item._id);
+                                setlFeedComment_response(item.comments);
+                                setModalVisible(true);
                             }
 
                             }>
-                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                            <Image
-                                source={require('../../images/chat.png')}
-                                style={{ height: s(20), width: s(20), }}
-                            />
-                            <Text style={{ marginLeft: s(5) }}>{item?.comments.length + ' Comments'}</Text>
-                        </View>
+                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                <Image
+                                    source={require('../../images/chat.png')}
+                                    style={{ height: s(20), width: s(20), }}
+                                />
+                                <Text style={{ marginLeft: s(5) }}>{item?.comments.length + ' Comments'}</Text>
+                            </View>
                         </TouchableOpacity>
                         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                             <Image
@@ -227,7 +270,8 @@ const Home = props => {
 
 
     const onRefresh = React.useCallback(() => {
-
+        setloader(true);
+        getFeed();
         wait(1500).then(() => setRefreshing(false));
     }, []);
     const wait = (timeout) => {
@@ -271,15 +315,17 @@ const Home = props => {
                         No Data Found !
                     </Text>:null
                 )} */}
-                <Spinner
-                    visible={getloader}
-                    textContent={'Loading...'}
-                    textStyle={styles.spinnerTextStyle}
-                />
+                {getloader ?
+                    <Spinner
+                        visible={true}
+                        textContent={'Loading...'}
+                        textStyle={styles.spinnerTextStyle}
+                    /> : null}
                 <BottomSheet
                     visible={modalVisible}
                     visibleFun={() => setModalVisible(!modalVisible)}
-                    data={latestFeed_response}
+                    data={FeedComment_response}
+                    feed_id={selectedFeed_id}
                     myCallback={(paramOne, paramTwo) => {
                         console.log("ldfklkdlfkldkf");
                     }}>
