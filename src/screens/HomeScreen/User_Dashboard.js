@@ -80,6 +80,57 @@ const User_Dashboard = props => {
             console.log('getAccessToken', 'Error retrieving data');
         }
     };
+
+    const storeSchoolCodeData = async ( School_code) => {
+        try {
+           
+         await AsyncStorage.setItem('@school_code', School_code);
+            
+    
+        } catch (e) {
+            // saving error
+        }
+    };
+    const school_list = async (school_id) => {
+        try {
+            // const client = await loggedInClient();
+            const client = await loginRequest();
+            console.log('APIName.drivers>>', apiName.schools);
+            client
+                .get(apiName.schools)
+                .then(response => {
+                    if (response.status == 200) {
+                        let data = response.data.data;
+                        try {
+                            console.log('Response data from compitancy_list' + JSON.stringify(data));
+                            for (let index = 0; index < data.length; index++) {
+                                const element = data[index];
+                                if(element._id== school_id){
+                                    storeSchoolCodeData(element.school_code);
+                                }
+                                
+                            }
+
+                        } catch (error) {
+                            console.log('Exception' + error.test);
+                            
+                        }
+
+                      
+                    } else {
+                        
+                    }
+
+                })
+                .catch(error => {
+                    console.log('error' + error);
+                    
+                });
+        } catch (error) {
+            console.log("catch is working >>>>", JSON.stringify(error));
+            
+        }
+    };
     const getStoreData = async value => {
         try {
             const value = await AsyncStorage.getItem('@storage_Key');
@@ -125,6 +176,7 @@ const User_Dashboard = props => {
             // You can await here
             const response = await getfull_name();
             const response1 = await getschool_code();
+            school_list(response1);
             // ...
         }
         fetchData();

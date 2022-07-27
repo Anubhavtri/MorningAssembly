@@ -33,7 +33,6 @@ const Home = props => {
     const [refreshing, setRefreshing] = React.useState(false);
     const [modalVisible, setModalVisible] = React.useState(false);
     const [selectedFeed_id, setselectedFeed_id] = useState('');
-    const [like, setlike] = useState(false);
     const [schoolcode, setSchoolCode] = useState(false);
 
 
@@ -85,7 +84,7 @@ const Home = props => {
             const client = await loggedInClient();
 
             client
-                .get(APIName.feeds + '?school_code=SCH78')
+                .get(APIName.feeds + '?school_code='+await getschool_code())
                 .then(response => {
                     setloader(false);
                     if (response.status == 200) {
@@ -193,7 +192,7 @@ const Home = props => {
 
                         </View>
                         <View style={{ marginTop: s(1), marginLeft: s(5), flex: 4 }}>
-                            <Text style={styles.title}>{item?.schoolId?.school_name}</Text>
+                            <Text style={styles.title}>{item?.userId?.full_name}</Text>
                             <Text style={styles.input_type}>{moment(item?.created_at).fromNow()}</Text>
                         </View>
                         <Image
@@ -214,7 +213,6 @@ const Home = props => {
                             onPress={() => {
                                 setselectedFeed_id(item._id);
                                 setloader(true);
-                                setlike(true);
                                 addLike();
                             }
 
@@ -222,7 +220,7 @@ const Home = props => {
                             <View
                                 style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}
                             >
-                                {like ? <Image
+                                {item.isLikedByUser ? <Image
                                     source={require('../../images/fill_like.png')}
                                     style={{ height: s(20), width: s(20), }}
                                 /> :

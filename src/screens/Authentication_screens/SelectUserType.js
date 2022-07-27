@@ -51,10 +51,10 @@ const SelectUserType = props => {
         <View style={{ alignSelf: 'center', width: '100%', justifyContent: 'center', marginTop: s(50) }}>
           <Text style={{ fontFamily: fonts('poppinsSemibold'), color: colors.PRIMARY_COLOR, fontSize: s(14), alignSelf: 'center', textAlign: 'center' }}>Select User Type</Text>
           <Button
-            title={'Driver'}
+            title={'Manegment/School'}
             onPress={() => {
               console.log('Login_button+++');
-              props.navigation.navigate('Login', { type: '2' });
+              props.navigation.navigate('Login', { type: '3' });
             }}
           />
           <Button
