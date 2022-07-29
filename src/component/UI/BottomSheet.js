@@ -1,4 +1,4 @@
-import React, { useEffect ,useState} from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { View, StyleSheet, Pressable, Text, TextInput, FlatList, TouchableOpacity, Image, Platform, ToastAndroid, Alert } from 'react-native';
 
@@ -15,54 +15,55 @@ import loggedInClient from '../../utility/apiAuth/loggedInClient';
 import APIName from '../../utility/api/apiName';
 
 
-const BottomSheet = ({ visible, visibleFun, myCallback, title, data ,feed_id}) => {
+const BottomSheet = ({ visible, visibleFun, myCallback, title, data, feed_id }) => {
   const [getloader, setloader] = useState(false);
   const [comment, setComment] = useState('');
   function notifyMessage(msg) {
     if (Platform.OS === 'android') {
-        ToastAndroid.show(msg, ToastAndroid.SHORT);
+      ToastAndroid.show(msg, ToastAndroid.SHORT);
     } else {
-        Alert(msg);
+      Alert(msg);
     }
-}
+  }
   const addComment = async () => {
     if (!(await NetworkUtils.isNetworkAvailable())) {
-        setloader(false);
-        notifyMessage(
-            'No Internet Connection! You are offline please check your internet connection',
-        );
-        return;
+      setloader(false);
+      notifyMessage(
+        'No Internet Connection! You are offline please check your internet connection',
+      );
+      return;
     } else {
-        /* this.showLoader(); */
-        var data = {
-          feedId: feed_id,
-          comment: comment,
-           };
-        console.log('request', '' + JSON.stringify(data));
-        const lient = await loggedInClient();
-        lient
-            .post(APIName.comment, data)
-            .then(response => {
-                console.log('Response data from axios' + JSON.stringify(response));
-                try {
-                    setloader(false);
-                    notifyMessage('Comment Successfully Submitted !');
-                   
+      /* this.showLoader(); */
+      var data = {
+        feedId: feed_id,
+        comment: comment,
+      };
+      console.log('request', '' + JSON.stringify(data));
+      const lient = await loggedInClient();
+      lient
+        .post(APIName.comment, data)
+        .then(response => {
+          console.log('Response data from axios' + JSON.stringify(response));
+          try {
+            setloader(false);
+            setComment('')
+            notifyMessage('Comment Successfully Submitted !');
+            myCallback("ddkjfkdjfj");
 
-                } catch (error) {
-                    console.log('Exception' + error.test);
-                }
+          } catch (error) {
+            console.log('Exception' + error.test);
+          }
 
-                setloader(false);
-                //getData();
-                /*   props.navigation.navigate('Dashboard', { name: 'Jane 123456789' }); */
-            })
-            .catch(error => {
-                setloader(false);
-                notifyMessage('getting some error' );
-            });
+          setloader(false);
+          //getData();
+          /*   props.navigation.navigate('Dashboard', { name: 'Jane 123456789' }); */
+        })
+        .catch(error => {
+          setloader(false);
+          notifyMessage('getting some error');
+        });
     }
-};
+  };
   const renderItem_requested_skill = (item, index) => {
     return (
       <TouchableOpacity
@@ -133,8 +134,24 @@ const BottomSheet = ({ visible, visibleFun, myCallback, title, data ,feed_id}) =
         }}>
 
         <View
-          style={{ alignContent: 'center', alignItems: 'center', margin: s(20) }}>
-          <Text style={styles.Title}>{'Comments'}</Text>
+          style={{ alignContent: 'center', alignItems: 'center', margin: s(20), flexDirection: 'row' }}>
+          <Text style={{
+            color: colors.PRIMARY_TEXT_COLOR,
+            fontSize: 16,
+            alignSelf: 'center',
+            fontFamily: fonts('poppinsSemibold'),
+            flex: 4, textAlign: 'center'
+          }}>{'Comments'}</Text>
+          <TouchableOpacity
+            onPress={() => {
+              console.log("dkljfkldjkfj");
+              visibleFun();
+            }}>
+            <Image
+              source={require('../../images/close.png')}
+              style={{ height: s(16), width: s(16), alignSelf: 'center' }}
+            />
+          </TouchableOpacity>
         </View>
         <FlatList
           style={{ marginBottom: s(60), margin: s(3) }}
@@ -164,27 +181,27 @@ const BottomSheet = ({ visible, visibleFun, myCallback, title, data ,feed_id}) =
             selectionColor='transparent'
             underlineColor='transparent'
             underlineColorAndroid='transparent'
-          value={comment}
-          onChangeText={text => setComment(text)}
+            value={comment}
+            onChangeText={text => setComment(text)}
           />
           <TouchableOpacity
-            onPress={() =>{
+            onPress={() => {
               console.log("dkljfkldjkfj");
               setloader(true);
-                addComment();
+              addComment();
             }}>
             <Image
               source={require('../../images/send.png')}
-              style={{ height: s(35), width: s(35),alignSelf:'center',marginTop:s(10) }}
+              style={{ height: s(35), width: s(35), alignSelf: 'center', marginTop: s(10) }}
             />
           </TouchableOpacity>
         </View>
-        {getloader?
-                <Spinner
-                    visible={true}
-                    textContent={'Loading...'}
-                    textStyle={styles.spinnerTextStyle}
-                />:null}
+        {getloader ?
+          <Spinner
+            visible={true}
+            textContent={'Loading...'}
+            textStyle={styles.spinnerTextStyle}
+          /> : null}
       </View>
     </Modal>
   );

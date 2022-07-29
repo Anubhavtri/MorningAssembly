@@ -26,6 +26,7 @@
     "react-native-gesture-handler": "^2.2.0",
     "react-native-get-location": "^2.2.1",
     "react-native-image-crop-picker": "^0.37.3",
+    "react-native-image-zoom-viewer": "^3.0.1",
     "react-native-keep-awake": "^3.2.0",
     "react-native-keyboard-accessory": "^0.1.16",
     "react-native-loading-spinner-overlay": "^3.0.0",

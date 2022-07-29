@@ -108,6 +108,9 @@ export default {
   comment:'comment',
   add_view:'add-view',
   add_like:'add-like',
+  remove_like:'remove-like',
+  delete_feed:'delete-feed',
+
   profile:'profile/',
 
 

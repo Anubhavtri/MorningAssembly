@@ -6,6 +6,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
  import AddPostStack from './stack/AddPostStack';
  import Notification from './stack/NotificaationStack';
  import EditProfile from './stack/EditProfileStack';
+ import FeedDetailStack from './stack/FeedDetailStack';
 
 // import MySkill from './stack/MySkillStack';
 // import PrivacyPolicy from './stack/PrivacyPolicyStack';
@@ -41,6 +42,11 @@ const MainStack = () => {
        <Stack.Screen
         name="EditProfileStack"
         component={EditProfile}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="FeedDetailStack"
+        component={FeedDetailStack}
         options={{headerShown: false}}
       />
       {/* <Stack.Screen

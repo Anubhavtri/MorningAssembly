@@ -13,6 +13,7 @@ import {
     RefreshControl,
     Alert,
     Image,
+    ToastAndroid,
 } from 'react-native';
 
 import { s } from 'react-native-size-matters';
@@ -26,6 +27,7 @@ import APIName from '../../utility/api/apiName';
 import loggedInClient from '../../utility/apiAuth/loggedInClient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomSheet from '../UI/BottomSheet';
+import CustomeDialog from '../UI/CustomeDialog';
 const Home = props => {
     const [getloader, setloader] = useState(false);
     const [latestFeed_response, setlatestFeed_response] = useState([]);
@@ -33,6 +35,10 @@ const Home = props => {
     const [refreshing, setRefreshing] = React.useState(false);
     const [modalVisible, setModalVisible] = React.useState(false);
     const [selectedFeed_id, setselectedFeed_id] = useState('');
+    const [user_id, setuser_id] = useState('');
+    const [updateprofilemodalVisible, setupdateprofileModalVisible] = useState(false);
+    const [index, setindex] = useState('');
+
     const [schoolcode, setSchoolCode] = useState(false);
 
 
@@ -53,7 +59,16 @@ const Home = props => {
     const getschool_code = async () => {
         try {
             const retrievedItem = await AsyncStorage.getItem('@school_code');
-            
+
+            return retrievedItem;
+        } catch (error) {
+            console.log('getAccessToken', 'Error retrieving data');
+        }
+    };
+    const getuser_id = async () => {
+        try {
+            const retrievedItem = await AsyncStorage.getItem('@user_id');
+
             return retrievedItem;
         } catch (error) {
             console.log('getAccessToken', 'Error retrieving data');
@@ -62,7 +77,9 @@ const Home = props => {
     useEffect(() => {
         async function fetchData() {
             const response1 = await getschool_code();
-            console.log("response1>>>"+response1);
+            const user_id = await getuser_id();
+            setuser_id(user_id);
+            console.log("response1>>>" + user_id);
             if (response1 == null) {
                 setSchoolCode(false);
             } else {
@@ -72,7 +89,13 @@ const Home = props => {
         }
         fetchData();
     }, []);
-    
+    function notifyMessage(msg) {
+        if (Platform.OS === 'android') {
+          ToastAndroid.show(msg, ToastAndroid.SHORT);
+        } else {
+          Alert(msg);
+        }
+      }
 
     const getFeed = async () => {
         try {
@@ -84,7 +107,7 @@ const Home = props => {
             const client = await loggedInClient();
 
             client
-                .get(APIName.feeds + '?school_code='+await getschool_code())
+                .get(APIName.feeds + '?school_code=' + await getschool_code())
                 .then(response => {
                     setloader(false);
                     if (response.status == 200) {
@@ -94,7 +117,14 @@ const Home = props => {
                             setloader(false)
                             setlatestFeed_response(data?.data);
                             console.log('Response data from getFeed_list' + JSON.stringify(data));
-
+                            if (index != '') {
+                                for (let i = 0; i < data?.data.length; i++) {
+                                    const element = data?.data[i];
+                                    if (element._id == index) {
+                                        setlFeedComment_response(element.comments);
+                                    }
+                                }
+                            }
 
                         } catch (error) {
                             console.log('Exception' + error);
@@ -158,15 +188,98 @@ const Home = props => {
             setloader(false);
         }
     };
+    const adddislikeLike = async () => {
+        try {
+            var data = {
+                feedId: selectedFeed_id,
+            };
+            console.log("addLike>>>" + JSON.stringify(data));
+            const client = await loggedInClient();
+            client
+                .post(APIName.remove_like, data)
+                .then(response => {
+                    setloader(false);
+                    if (response.status == 200) {
+                        let data = response.data;
+                        setloader(false);
+                        try {
+                            setloader(false)
+                            getFeed();
+                            console.log('Response data from getFeed_list' + JSON.stringify(data));
+
+
+                        } catch (error) {
+                            console.log('Exception' + error);
+                            setloader(false)
+                        }
+
+                        setloader(false);
+                    } else {
+
+                        setloader(false);
+                    }
+
+                })
+                .catch(error => {
+                    console.log('error' + error);
+                    setloader(false);
+                });
+        } catch (error) {
+            console.log("catch is working >>>>", JSON.stringify(error));
+            setloader(false);
+        }
+    };
+    const deletefeed = async () => {
+        try {
+            var data = {
+                feedId: selectedFeed_id,
+            };
+            console.log("addLike>>>" + JSON.stringify(data));
+            const client = await loggedInClient();
+            client
+                .delete(APIName.delete_feed, data)
+                .then(response => {
+                    setloader(false);
+                    if (response.status == 200) {
+                        let data = response.data;
+                        setloader(false);
+                        try {
+                            setloader(false);
+                            notifyMessage(data?.message);
+                            getFeed();
+                            console.log('Response data from getFeed_list' + JSON.stringify(data));
+
+
+                        } catch (error) {
+                            console.log('Exception' + error);
+                            setloader(false)
+                        }
+
+                        setloader(false);
+                    } else {
+
+                        setloader(false);
+                    }
+
+                })
+                .catch(error => {
+                    console.log('error' + error);
+                    setloader(false);
+                });
+        } catch (error) {
+            console.log("catch is working >>>>", JSON.stringify(error));
+            setloader(false);
+        }
+    };
 
 
     const renderItem_requested_skill = (item, index) => {
 
         return (
             <TouchableOpacity
-                onPress={() =>
-                    console.log("dkljfkldjkfj")
-
+                onPress={() => {
+                    props.navigation.navigate("FeedDetailStack", { data: item });
+                }
                 }>
                 <View
                     style={{
@@ -195,10 +308,20 @@ const Home = props => {
                             <Text style={styles.title}>{item?.userId?.full_name}</Text>
                             <Text style={styles.input_type}>{moment(item?.created_at).fromNow()}</Text>
                         </View>
-                        <Image
-                            source={require('../../images/dots.png')}
-                            style={{ height: s(20), width: s(20), justifyContent: 'center', alignSelf: 'center' }}
-                        />
+                        {user_id == item.userId?._id ?
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setselectedFeed_id(item._id);
+                                    setupdateprofileModalVisible(true);
+                                }
+                                }>
+                                <Image
+                                    source={require('../../images/delete.png')}
+                                    style={{ height: s(20), width: s(20), justifyContent: 'center', alignSelf: 'center' }}
+                                />
+                            </TouchableOpacity>
+
+                            : null}
                     </View>
 
                     <Image
@@ -213,7 +336,11 @@ const Home = props => {
                             onPress={() => {
                                 setselectedFeed_id(item._id);
                                 setloader(true);
-                                addLike();
+                                if (item.isLikedByUser) {
+                                    adddislikeLike();
+                                } else {
+                                    addLike();
+                                }
                             }
 
                             }>
@@ -235,6 +362,7 @@ const Home = props => {
                             style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}
                             onPress={() => {
                                 setselectedFeed_id(item._id);
+                                setindex(item._id);
                                 setlFeedComment_response(item.comments);
                                 setModalVisible(true);
                             }
@@ -248,13 +376,13 @@ const Home = props => {
                                 <Text style={{ marginLeft: s(5) }}>{item?.comments.length + ' Comments'}</Text>
                             </View>
                         </TouchableOpacity>
-                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                        {/* <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                             <Image
                                 source={require('../../images/share.png')}
                                 style={{ height: s(20), width: s(20), }}
                             />
                             <Text style={{ marginLeft: s(5) }}>Share</Text>
-                        </View>
+                        </View> */}
                     </View>
 
                 </View>
@@ -299,6 +427,18 @@ const Home = props => {
                         />
                     }
                 />
+                <CustomeDialog
+                        visible={updateprofilemodalVisible}
+                        visibleFun={() => setupdateprofileModalVisible(!updateprofilemodalVisible)}
+                        title="Delete Feed"
+                        sub_title="Are you want to delete feed?"
+                        myCallback={(paramOne, paramTwo) => {
+                            console.log('paramOne', paramOne);
+                            setupdateprofileModalVisible(false);
+                            setloader(true);
+                            deletefeed();
+                        }}
+                    />
                 {/* { latestskills_response?.length > 0 && getloader==false? null : (
                     getloader == false?
                     <Text
@@ -325,7 +465,8 @@ const Home = props => {
                     data={FeedComment_response}
                     feed_id={selectedFeed_id}
                     myCallback={(paramOne, paramTwo) => {
-                        console.log("ldfklkdlfkldkf");
+                        console.log("ldfklkdlfkldkf>>" + paramOne);
+                        getFeed();
                     }}>
 
                 </BottomSheet>
