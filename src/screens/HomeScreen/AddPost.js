@@ -40,7 +40,13 @@ const AddPost = props => {
     const [title, settitle] = useState('');
     const [fullname, setfullname] = useState('');
 
-
+    function notifyMessage(msg) {
+        if (Platform.OS === 'android') {
+            ToastAndroid.show(msg, ToastAndroid.SHORT);
+        } else {
+            alert(msg);
+        }
+    }
 
 
     useEffect(() => {
@@ -137,6 +143,7 @@ const AddPost = props => {
                         try {
                             setloader(false)
                             console.log('Response data from compitancy_list' + JSON.stringify(data));
+                            notifyMessage("Add Feed Successfully ")
                             props.navigation.goBack();
 
                         } catch (error) {

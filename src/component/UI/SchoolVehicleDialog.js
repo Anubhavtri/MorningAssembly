@@ -47,14 +47,14 @@ const SchoolVehiclelistDialog = ({ visible, visibleFun, myCallback, title, sub_t
                             <Image
                                 style={{
                                     marginRight: s(10),
-                                    alignSelf: 'center', alignContent: 'center'
+                                    alignSelf: 'center', alignContent: 'center',tintColor:colors.PRIMARY_COLOR
                                 }}
                                 source={require('../../images/active_radio.png')} />
                             :
                             <Image
                                 style={{
                                     marginRight: s(10),
-                                    alignSelf: 'center', alignContent: 'center'
+                                    alignSelf: 'center', alignContent: 'center',tintColor:colors.PRIMARY_COLOR
                                 }}
                                 source={require('../../images/inactive_radio.png')} />
                         }
@@ -143,8 +143,10 @@ const SchoolVehiclelistDialog = ({ visible, visibleFun, myCallback, title, sub_t
                                     if(selected !='' && selected_id!=''){
                                     myCallback(selected,selected_id);
                                     }else{
-                                        Alert.alert('Please select any one!')
-                                       
+                                        //Alert.alert('Please select any one!')
+                                                                              setselected(data[0].vehicle_id.vehicle_number);
+                                        setselected_id(data[0]._id);
+                                        myCallback(selected,selected_id);
                                     }
                                 }}>
                                 <View style={styles.button_confirm}>

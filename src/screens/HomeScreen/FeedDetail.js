@@ -115,13 +115,38 @@ const FeedDetail = props => {
                     />
                 </TouchableOpacity>
                 {showmodel ?
-                    <Modal visible={true}
-                        transparent={true}>
+                    <Modal
+                        visible={true}
+                        transparent={true}
+                        style={{ margin: 0 }}>
+                            <View style={{backgroundColor:colors.PRIMARY_TEXT_COLOR,height:'100%'}}>
+                        <View
+                            style={{ alignContent: 'center', alignItems: 'center', margin: s(20), flexDirection: 'row' }}>
+                            <Text style={{
+                                color: colors.WHITE_COLOR,
+                                fontSize: 16,
+                                alignSelf: 'center',
+                                fontFamily: fonts('poppinsSemibold'),
+                                flex: 4, textAlign: 'center'
+                            }}>{''}</Text>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    console.log("dkljfkldjkfj");
+                                    setshowmodel(false);
+                                }}>
+                                <Image
+                                    source={require('../../images/close.png')}
+                                    style={{ height: s(16), width: s(16), alignSelf: 'center',tintColor: colors.WHITE_COLOR, }}
+                                />
+                            </TouchableOpacity>
+                        </View>
                         <ImageViewer
-                            imageUrls={images} 
-                            onCancel={()=>{setshowmodel(false)}}
-                            
-                            />
+
+                            imageUrls={images}
+                            onCancel={() => { setshowmodel(false) }}
+
+                        />
+                        </View>
                     </Modal> : null}
 
             </View>

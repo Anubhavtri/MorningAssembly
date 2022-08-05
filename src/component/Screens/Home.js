@@ -147,10 +147,10 @@ const Home = props => {
             setloader(false);
         }
     };
-    const addLike = async () => {
+    const addLike = async (feedId) => {
         try {
             var data = {
-                feedId: selectedFeed_id,
+                feedId: feedId,
             };
             console.log("addLike>>>" + JSON.stringify(data));
             const client = await loggedInClient();
@@ -188,10 +188,10 @@ const Home = props => {
             setloader(false);
         }
     };
-    const adddislikeLike = async () => {
+    const adddislikeLike = async (feedId) => {
         try {
             var data = {
-                feedId: selectedFeed_id,
+                feedId: feedId,
             };
             console.log("addLike>>>" + JSON.stringify(data));
             const client = await loggedInClient();
@@ -234,10 +234,10 @@ const Home = props => {
             var data = {
                 feedId: selectedFeed_id,
             };
-            console.log("addLike>>>" + JSON.stringify(data));
+            console.log("deletefeed>>>" + JSON.stringify(data));
             const client = await loggedInClient();
             client
-                .delete(APIName.delete_feed, data)
+                .delete(APIName.delete_feed, {data})
                 .then(response => {
                     setloader(false);
                     if (response.status == 200) {
@@ -247,7 +247,7 @@ const Home = props => {
                             setloader(false);
                             notifyMessage(data?.message);
                             getFeed();
-                            console.log('Response data from getFeed_list' + JSON.stringify(data));
+                            console.log('Response data from deletefeed' + JSON.stringify(data));
 
 
                         } catch (error) {
@@ -337,9 +337,9 @@ const Home = props => {
                                 setselectedFeed_id(item._id);
                                 setloader(true);
                                 if (item.isLikedByUser) {
-                                    adddislikeLike();
+                                    adddislikeLike(item._id);
                                 } else {
-                                    addLike();
+                                    addLike(item._id);
                                 }
                             }
 
@@ -347,15 +347,16 @@ const Home = props => {
                             <View
                                 style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}
                             >
-                                {item.isLikedByUser ? <Image
+                                {item.isLikedByUser ?
+                                 <Image
                                     source={require('../../images/fill_like.png')}
-                                    style={{ height: s(20), width: s(20), }}
+                                    style={{ height: s(22), width: s(22),tintColor:colors.PRIMARY_COLOR }}
                                 /> :
                                     <Image
                                         source={require('../../images/love.png')}
                                         style={{ height: s(20), width: s(20), }}
                                     />}
-                                <Text style={{ marginLeft: s(5) }}>{item?.like_count + ' Likes'}</Text>
+                                <Text style={{ marginLeft: s(10) }}>{item?.like_count + ' Likes'}</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity

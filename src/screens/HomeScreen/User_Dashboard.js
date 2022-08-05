@@ -165,16 +165,23 @@ const User_Dashboard = props => {
             console.log('getAccessToken', 'Error retrieving data');
         }
     };
-    // useEffect( async () => {
-    //     // const getcall = async () => {
+    useEffect(() => {
+        async function fetchData() {
+            setUsername(await getfull_name());
+        }
+        fetchData();
+    }, []);
+    // useFocusEffect( async () => {
+    //      const getcall = async () => {
     //         setUsername(await getfull_name());
-    //     // }
-    //     // getcall();
+    //      }
+    //      getcall();
     // }, []);
     useEffect(() => {
         async function fetchData() {
             // You can await here
             const response = await getfull_name();
+            setUsername(response)
             const response1 = await getschool_code();
             school_list(response1);
             // ...

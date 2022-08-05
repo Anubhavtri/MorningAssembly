@@ -122,8 +122,8 @@ const EditProfile = props => {
                         storeUserData(school_id, bus_no, name);
                         notifyMessage('Profile Updated Successfully !');
                         // props.navigation.navigate('OTP', { name: 'Jane 123456789' })
-                        props.navigation.goBack();
-                        //props.navigation.replace('Authorized', { name: 'Jane 123456789' });
+                         props.navigation.goBack();
+                        //props.navigation.navigate('Home', { name: 'Jane 123456789' });
                     } catch (error) {
                         console.log('Exception' + error.test);
                     }

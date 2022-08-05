@@ -32,19 +32,19 @@ const ADD_Post = props => {
         <>
 
             <View style={{ flex: 1, margin: s(10), paddingBottom: s(3), width: '100%', marginBottom: s(50), marginRight: s(50) }}>
-
+                <Text style={{ fontSize: s(15), margin: s(10), marginLeft: s(40), textAlign: 'center' }}>No reminders have been added.Click Plus icon to add feeds.</Text>
                 <View style={{ height: s(40), width: s(40), position: 'absolute', bottom: 0, alignSelf: 'flex-end', marginRight: s(10) }}>
                     <TouchableOpacity
                         onPress={() => {
                             console.log("working C");
                             setModalVisible(true);
-                            
+
 
                         }}>
 
                         <Image
                             source={require('../../images/plus.png')}
-                            style={{ height: s(40), width: s(40), alignSelf: 'flex-end' }}
+                            style={{ height: s(40), width: s(40), alignSelf: 'flex-end',tintColor:colors.PRIMARY_COLOR }}
                         />
 
                     </TouchableOpacity>
@@ -69,7 +69,7 @@ const ADD_Post = props => {
                                 // setDefultImage(image?.path)
                                 // setImage_data(image?.data)
                                 // { render_image() }
-                                props.navigation.navigate('AddPostStack', { Image_Path: image?.data  })
+                                props.navigation.navigate('AddPostStack', { Image_Path: image?.data })
                             });
                         } else if (paramOne == 'Gallery') {
                             ImagePicker.openPicker({

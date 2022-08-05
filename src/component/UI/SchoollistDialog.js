@@ -25,16 +25,18 @@ const SchoollistDialog = ({ visible, visibleFun, myCallback, title, sub_title, d
 
     const renderItem_requested_skill = (item, index) => {
 
-        { console.log('renderItem_requested_skill>>', index) }
-
         return (
+        
             <TouchableOpacity
                 onPress={() => {
+                    console.log("vfkdljfkjdf>>"+index);
                     setindex(index);
                     setselected(item.school_name);
                     setselected_id(item._id);
                 }
                 }>
+                    {/* {Index == ''? setselected(item.school_name):null}
+                    {Index == ''? setselected_id(item._id):null} */}
                 <View
                     style={{
                         margin: s(5),
@@ -43,18 +45,33 @@ const SchoollistDialog = ({ visible, visibleFun, myCallback, title, sub_title, d
                     }}>
 
                     <View style={{ flexDirection: 'row' }}>
+                       
+
+                        {/* {Index == '' && index == ''?
+                        //   <Image
+                        //   style={{
+                        //       marginRight: s(10),
+                        //       alignSelf: 'center', alignContent: 'center',tintColor:colors.PRIMARY_COLOR
+                        //   }}
+                        //   source={require('../../images/inactive_radio.png')} />
+                        console.log("if is first working>> "+Index+"<>"+index)
+                          : */}
+                       
+
                         {Index == index ?
+
                             <Image
                                 style={{
                                     marginRight: s(10),
-                                    alignSelf: 'center', alignContent: 'center'
+                                    alignSelf: 'center', alignContent: 'center', tintColor: colors.PRIMARY_COLOR
                                 }}
                                 source={require('../../images/active_radio.png')} />
                             :
+        
                             <Image
                                 style={{
                                     marginRight: s(10),
-                                    alignSelf: 'center', alignContent: 'center'
+                                    alignSelf: 'center', alignContent: 'center', tintColor: colors.PRIMARY_COLOR
                                 }}
                                 source={require('../../images/inactive_radio.png')} />
                         }
@@ -143,7 +160,10 @@ const SchoollistDialog = ({ visible, visibleFun, myCallback, title, sub_title, d
                                     if (selected != '' && selected_id != '') {
                                         myCallback(selected, selected_id);
                                     } else {
-                                        Alert.alert('Please select any one!')
+                                      //  Alert.alert('Please select any one!')
+                                        setselected(data[0].school_name);
+                                        setselected_id(data[0]._id);
+                                        myCallback(data[0].school_name, data[0]._id);
                                     }
                                 }}>
                                 <View style={styles.button_confirm}>
