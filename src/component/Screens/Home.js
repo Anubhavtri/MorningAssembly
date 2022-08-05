@@ -35,8 +35,12 @@ const Home = props => {
     const [refreshing, setRefreshing] = React.useState(false);
     const [modalVisible, setModalVisible] = React.useState(false);
     const [selectedFeed_id, setselectedFeed_id] = useState('');
+    const [commentFeed_id, setcommentFeed_id] = useState('');
+
     const [user_id, setuser_id] = useState('');
     const [updateprofilemodalVisible, setupdateprofileModalVisible] = useState(false);
+    const [commentDeletemodalVisible, setcommentDeleteModalVisible] = useState(false);
+
     const [index, setindex] = useState('');
 
     const [schoolcode, setSchoolCode] = useState(false);
@@ -271,6 +275,49 @@ const Home = props => {
             setloader(false);
         }
     };
+    const commentdeletefeed = async () => {
+        try {
+            var data = {
+                feedId: selectedFeed_id,
+                commentId: commentFeed_id,
+            };
+            console.log("deletefeed>>>" + JSON.stringify(data));
+            const client = await loggedInClient();
+            client
+                .delete(APIName.comment, {data})
+                .then(response => {
+                    setloader(false);
+                    if (response.status == 200) {
+                        let data = response.data;
+                        setloader(false);
+                        try {
+                            setloader(false);
+                            notifyMessage(data?.message);
+                            getFeed();
+                            console.log('Response data from deletefeed' + JSON.stringify(data));
+
+
+                        } catch (error) {
+                            console.log('Exception' + error);
+                            setloader(false)
+                        }
+
+                        setloader(false);
+                    } else {
+
+                        setloader(false);
+                    }
+
+                })
+                .catch(error => {
+                    console.log('error' + error);
+                    setloader(false);
+                });
+        } catch (error) {
+            console.log("catch is working >>>>", JSON.stringify(error));
+            setloader(false);
+        }
+    };
 
 
     const renderItem_requested_skill = (item, index) => {
@@ -431,13 +478,17 @@ const Home = props => {
                 <CustomeDialog
                         visible={updateprofilemodalVisible}
                         visibleFun={() => setupdateprofileModalVisible(!updateprofilemodalVisible)}
-                        title="Delete Feed"
-                        sub_title="Are you want to delete feed?"
+                        title={commentDeletemodalVisible?"Delete Comment":"Delete Feed"}
+                        sub_title={commentDeletemodalVisible?"Are you want to delete comment?":"Are you want to delete feed?"}
                         myCallback={(paramOne, paramTwo) => {
                             console.log('paramOne', paramOne);
                             setupdateprofileModalVisible(false);
                             setloader(true);
-                            deletefeed();
+                          if(commentDeletemodalVisible){
+                          commentdeletefeed();
+                          }
+                          else{
+                            deletefeed();}
                         }}
                     />
                 {/* { latestskills_response?.length > 0 && getloader==false? null : (
@@ -468,7 +519,14 @@ const Home = props => {
                     myCallback={(paramOne, paramTwo) => {
                         console.log("ldfklkdlfkldkf>>" + paramOne);
                         getFeed();
-                    }}>
+                    }}
+                    confirmation={(paramOne) => {
+                        setcommentFeed_id(paramOne);
+                        setcommentDeleteModalVisible(true);
+                        setupdateprofileModalVisible(true);
+                    }}
+                    >
+
 
                 </BottomSheet>
             </View>
