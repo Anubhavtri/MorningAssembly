@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import type {Node} from 'react';
+import React, {useState, useEffect} from 'react';
+// import type {Node} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -22,12 +22,9 @@ import PushController from './src/Notification/PushController';
 import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
 
+import 'react-native-gesture-handler';
 
-import 'react-native-gesture-handler'
-
-
-const App: () => Node = () => {
-
+const App = () => {
   const show_notification = (title, body) => {
     console.log('A new FCM message arrived!', title + '<>' + body);
     PushNotification.localNotificationSchedule({
@@ -54,12 +51,22 @@ const App: () => Node = () => {
 
   return (
     <>
-    <Navigation />
-    <PushController />
+      <Navigation />
+      <PushController />
     </>
   );
 };
 
-
-
 export default App;
+
+// export ANDROID_HOME=$HOME/Android/Sdk
+// export PATH=$PATH:$ANDROID_HOME/emulator
+// export PATH=$PATH:$ANDROID_HOME/tools
+// export PATH=$PATH:$ANDROID_HOME/tools/bin
+// export PATH=$PATH:$ANDROID_HOME/platform-tools
+// export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+// export PATH=$JAVA_HOME/bin:$PATH
+
+// export JAVA_HOME=/usr/lib/jvm/jdk1.8.0_151-openjdk-amd64
+
+// ## My Custom variables
