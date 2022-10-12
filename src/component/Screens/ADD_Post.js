@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -22,33 +22,67 @@ import fonts from '../../utility/fonts';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { useFocusEffect } from '@react-navigation/native';
 import SelectImageTypeDialog from '../../component/UI/SelectImageTypeDialog';
+import { TooltipMenu } from 'react-native-tooltip-menu';
+import VideoRecorder from 'react-native-beautiful-video-recorder';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 const ADD_Post = props => {
     const [getloader, setloader] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [latestskills_response, setlatestskills_response] = useState([]);
     const [refreshing, setRefreshing] = React.useState(false);
+    const cameraRef = useRef(null);
+    const videoRecord = async () => {
+        if (cameraRef && cameraRef.current) {
+            cameraRef.current.open({ maxLength: 30 }, (data) => {
+                props.navigation.navigate('AddPostStack', { Video_Path: data?.uri })
+                try {
+                    ReactNativeFirebase.readFile(data.uri, 'base64')
+                        .then(res => {
+                            // setImageBase64_data(res);
+                            console.log('captured data', res); // data.uri is the file path
+
+                        });
+                } catch (error) {
+                }
+            });
+        }
+    }
     return (
         <>
 
             <View style={{ flex: 1, margin: s(10), paddingBottom: s(3), width: '100%', marginBottom: s(50), marginRight: s(50) }}>
                 <Text style={{ fontSize: s(15), margin: s(10), marginLeft: s(40), textAlign: 'center' }}>No reminders have been added.Click Plus icon to add feeds.</Text>
                 <View style={{ height: s(40), width: s(40), position: 'absolute', bottom: 0, alignSelf: 'flex-end', marginRight: s(10) }}>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         onPress={() => {
                             console.log("working C");
                             setModalVisible(true);
 
 
-                        }}>
-
+                        }}> */}
+                    <TooltipMenu
+                        items={[
+                            {
+                                label: 'Image',
+                                onPress: () => setModalVisible(true)
+                            },
+                            {
+                                label: 'Video',
+                                onPress: () => videoRecord(),
+                            },
+                        ]}
+                    >
+                        {/* <VideoRecorder ref={videoRecorder} /> */}
                         <Image
                             source={require('../../images/plus.png')}
-                            style={{ height: s(40), width: s(40), alignSelf: 'flex-end',tintColor:colors.PRIMARY_COLOR }}
+                            style={{ height: s(40), width: s(40), alignSelf: 'flex-end', tintColor: colors.PRIMARY_COLOR }}
                         />
-
-                    </TouchableOpacity>
+                    </TooltipMenu>
+                    {/* </TouchableOpacity> */}
                 </View>
+                <VideoRecorder ref={cameraRef} />
+
 
                 <SelectImageTypeDialog
                     visible={modalVisible}

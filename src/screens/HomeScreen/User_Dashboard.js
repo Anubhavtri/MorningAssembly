@@ -37,6 +37,7 @@ import Requested from '../../component/Screens/Home'
 import Ongoing from '../../component/Screens/ADD_Post';
 
 import * as RootNavigation from '../../RootNavigation';
+import PrivacyPolicy from './PrivacyPolicy';
 
 
 const User_Dashboard = props => {
@@ -46,6 +47,7 @@ const User_Dashboard = props => {
     const [NotificationVisible, setNotificationVisible] = React.useState(false);
     const [username, setUsername] = useState('');
     const [schoolcode, setSchoolCode] = useState(false);
+    const [role, setRole] = useState()
 
 
     const [driver, setdriver] = React.useState(false);
@@ -81,12 +83,12 @@ const User_Dashboard = props => {
         }
     };
 
-    const storeSchoolCodeData = async ( School_code) => {
+    const storeSchoolCodeData = async (School_code) => {
         try {
-           
-         await AsyncStorage.setItem('@school_code', School_code);
-            
-    
+
+            await AsyncStorage.setItem('@school_code', School_code);
+
+
         } catch (e) {
             // saving error
         }
@@ -105,36 +107,37 @@ const User_Dashboard = props => {
                             console.log('Response data from compitancy_list' + JSON.stringify(data));
                             for (let index = 0; index < data.length; index++) {
                                 const element = data[index];
-                                if(element._id== school_id){
+                                if (element._id == school_id) {
                                     storeSchoolCodeData(element.school_code);
                                 }
-                                
+
                             }
 
                         } catch (error) {
                             console.log('Exception' + error.test);
-                            
+
                         }
 
-                      
+
                     } else {
-                        
+
                     }
 
                 })
                 .catch(error => {
                     console.log('error' + error);
-                    
+
                 });
         } catch (error) {
             console.log("catch is working >>>>", JSON.stringify(error));
-            
+
         }
     };
     const getStoreData = async value => {
         try {
             const value = await AsyncStorage.getItem('@storage_Key');
             if (value !== null) {
+                setRole(value)
                 // value previously stored
                 console.log("value>>>>>>>>", value);
                 if (value == 2) {
@@ -290,13 +293,26 @@ const User_Dashboard = props => {
                     />
                     <Text style={{ fontFamily: fonts('poppinsMedium'), textAlign: 'center', alignSelf: 'center', color: colors.WHITE_COLOR, marginLeft: s(5) }}>Support </Text>
                 </View> */}
-                <View style={{ flexDirection: 'row', margin: s(10) }}>
-                    <Image
-                        source={require('../../images/compliant.png')}
-                        style={{ tintColor: colors.WHITE_COLOR, height: s(20), width: s(20) }}
-                    />
-                    <Text style={{ fontFamily: fonts('poppinsMedium'), textAlign: 'center', alignSelf: 'center', color: colors.WHITE_COLOR, marginLeft: s(5) }}>Privacy Policy </Text>
-                </View>
+                <TouchableOpacity
+                    onPress={() => {
+                        console.log("working C");
+                        setNotificationVisible(false)
+                        // setVisibleTab('startSession')
+                        props.navigation.closeDrawer();
+                        props.navigation.navigate('privacyPolicy');
+
+
+
+                    }}>
+                    <View style={{ flexDirection: 'row', margin: s(10) }}>
+                        <Image
+                            source={require('../../images/compliant.png')}
+                            style={{ tintColor: colors.WHITE_COLOR, height: s(20), width: s(20) }}
+                        />
+                        <Text style={{ fontFamily: fonts('poppinsMedium'), textAlign: 'center', alignSelf: 'center', color: colors.WHITE_COLOR, marginLeft: s(5) }}>Privacy Policy </Text>
+                    </View>
+                </TouchableOpacity>
+
                 <TouchableOpacity
                     onPress={() => {
                         console.log("working C");
@@ -351,6 +367,7 @@ const User_Dashboard = props => {
             console.log('async clear error', e);
         }
     };
+    console.log('rile', role)
 
     const HomeScreen = (props) => {
         if (VisibleTab == 'Requested' || VisibleTab == 'ongoing' || VisibleTab == 'Completed') {
@@ -392,62 +409,64 @@ const User_Dashboard = props => {
 
                                 </View>
                             </TouchableOpacity>
-                            <TouchableOpacity
-                                style={{ flex: 1, justifyContent: 'center', marginRight: s(2) }}
-                                onPress={() => {
-                                    console.log("working B");
-                                    setVisibleTab('ongoing')
-                                    settabname('Add Post');
-                                    // props.navigation.navigate("Tracking")
-                                }}>
-                                <View style={{ flex: 1, backgroundColor: 'transparent', marginLeft: s(5) }}>
-                                    {VisibleTab == 'ongoing' ?
-                                        <View style={{ width: '100%', height: s(2), backgroundColor: colors.PRIMARY_COLOR }} /> : null}
-                                    <View style={{ height: s(40), justifyContent: 'center' }}>
+                            {role === 3 ?
+                                <TouchableOpacity
+                                    style={{ flex: 1, justifyContent: 'center', marginRight: s(2) }}
+                                    onPress={() => {
+                                        console.log("working B");
+                                        setVisibleTab('ongoing')
+                                        settabname('Add Post');
+                                        // props.navigation.navigate("Tracking")
+                                    }}>
+                                    <View style={{ flex: 1, backgroundColor: 'transparent', marginLeft: s(5) }}>
                                         {VisibleTab == 'ongoing' ?
-                                            <Image
-                                                source={require('../../images/more.png')}
-                                                style={{ tintColor: colors.PRIMARY_COLOR, height: s(16), width: s(16), alignSelf: 'center' }}
-                                            /> : <Image
-                                                source={require('../../images/more.png')}
-                                                style={{ tintColor: colors.SECONDARY_TEXT_COLOR, height: s(16), width: s(16), alignSelf: 'center' }}
-                                            />}
-                                        {VisibleTab == 'ongoing' ?
-                                            <Text style={{ backgroundColor: 'transparent', justifyContent: 'center', alignContent: 'center', alignItems: 'center', textAlign: 'center', fontFamily: fonts('poppinsSemibold'), fontSize: s(10), color: colors.PRIMARY_COLOR }}>Add Post</Text>
-                                            : <Text style={{ backgroundColor: 'transparent', justifyContent: 'center', alignContent: 'center', alignItems: 'center', textAlign: 'center', fontFamily: fonts('poppinsSemibold'), fontSize: s(10), color: colors.SECONDARY_TEXT_COLOR }}>Add Post</Text>
-                                        }
+                                            <View style={{ width: '100%', height: s(2), backgroundColor: colors.PRIMARY_COLOR }} /> : null}
+                                        <View style={{ height: s(40), justifyContent: 'center' }}>
+                                            {VisibleTab == 'ongoing' ?
+                                                <Image
+                                                    source={require('../../images/more.png')}
+                                                    style={{ tintColor: colors.PRIMARY_COLOR, height: s(16), width: s(16), alignSelf: 'center' }}
+                                                /> : <Image
+                                                    source={require('../../images/more.png')}
+                                                    style={{ tintColor: colors.SECONDARY_TEXT_COLOR, height: s(16), width: s(16), alignSelf: 'center' }}
+                                                />}
+                                            {VisibleTab == 'ongoing' ?
+                                                <Text style={{ backgroundColor: 'transparent', justifyContent: 'center', alignContent: 'center', alignItems: 'center', textAlign: 'center', fontFamily: fonts('poppinsSemibold'), fontSize: s(10), color: colors.PRIMARY_COLOR }}>Add Post</Text>
+                                                : <Text style={{ backgroundColor: 'transparent', justifyContent: 'center', alignContent: 'center', alignItems: 'center', textAlign: 'center', fontFamily: fonts('poppinsSemibold'), fontSize: s(10), color: colors.SECONDARY_TEXT_COLOR }}>Add Post</Text>
+                                            }
+                                        </View>
+
                                     </View>
-
-                                </View>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                                style={{ flex: 1, justifyContent: 'center', marginRight: s(2) }}
-                                onPress={() => {
-                                    console.log("working C");
-                                    setVisibleTab('Completed')
-                                    settabname('Community');
-                                }}>
-                                <View style={{ flex: 1, backgroundColor: 'transparent', marginLeft: s(5) }}>
-                                    {VisibleTab == 'Completed' ?
-                                        <View style={{ width: '100%', height: s(2), backgroundColor: colors.PRIMARY_COLOR }} /> : null}
-                                    <View style={{ height: s(40), justifyContent: 'center' }}>
+                                </TouchableOpacity>
+                                :
+                                <TouchableOpacity
+                                    style={{ flex: 1, justifyContent: 'center', marginRight: s(2) }}
+                                    onPress={() => {
+                                        console.log("working C");
+                                        setVisibleTab('Completed')
+                                        settabname('Activities');
+                                    }}>
+                                    <View style={{ flex: 1, backgroundColor: 'transparent', marginLeft: s(5) }}>
                                         {VisibleTab == 'Completed' ?
-                                            <Image
-                                                source={require('../../images/community.png')}
-                                                style={{ tintColor: colors.PRIMARY_COLOR, height: s(16), width: s(16), alignSelf: 'center' }}
-                                            /> : <Image
-                                                source={require('../../images/community.png')}
-                                                style={{ tintColor: colors.SECONDARY_TEXT_COLOR, height: s(16), width: s(16), alignSelf: 'center' }}
-                                            />}
-                                        {VisibleTab == 'Completed' ?
-                                            <Text style={{ backgroundColor: 'transparent', justifyContent: 'center', alignContent: 'center', alignItems: 'center', textAlign: 'center', fontFamily: fonts('poppinsSemibold'), fontSize: s(10), color: colors.PRIMARY_COLOR }}>Community</Text>
-                                            : <Text style={{ backgroundColor: 'transparent', justifyContent: 'center', alignContent: 'center', alignItems: 'center', textAlign: 'center', fontFamily: fonts('poppinsSemibold'), fontSize: s(10), color: colors.SECONDARY_TEXT_COLOR }}>Community</Text>
-                                        }
+                                            <View style={{ width: '100%', height: s(2), backgroundColor: colors.PRIMARY_COLOR }} /> : null}
+                                        <View style={{ height: s(40), justifyContent: 'center' }}>
+                                            {VisibleTab == 'Completed' ?
+                                                <Image
+                                                    source={require('../../images/community.png')}
+                                                    style={{ tintColor: colors.PRIMARY_COLOR, height: s(16), width: s(16), alignSelf: 'center' }}
+                                                /> : <Image
+                                                    source={require('../../images/community.png')}
+                                                    style={{ tintColor: colors.SECONDARY_TEXT_COLOR, height: s(16), width: s(16), alignSelf: 'center' }}
+                                                />}
+                                            {VisibleTab == 'Completed' ?
+                                                <Text style={{ backgroundColor: 'transparent', justifyContent: 'center', alignContent: 'center', alignItems: 'center', textAlign: 'center', fontFamily: fonts('poppinsSemibold'), fontSize: s(10), color: colors.PRIMARY_COLOR }}>Activities</Text>
+                                                : <Text style={{ backgroundColor: 'transparent', justifyContent: 'center', alignContent: 'center', alignItems: 'center', textAlign: 'center', fontFamily: fonts('poppinsSemibold'), fontSize: s(10), color: colors.SECONDARY_TEXT_COLOR }}>Activities</Text>
+                                            }
+                                        </View>
+
                                     </View>
-
-                                </View>
-                            </TouchableOpacity>
+                                </TouchableOpacity>
+                            }
                         </View>
                     </View>
 
@@ -547,6 +566,11 @@ const User_Dashboard = props => {
                     <Drawer.Screen
                         name="EditProfile"
                         component={EditProfile}
+                        options={{ headerShown: false }}
+                    />
+                    <Drawer.Screen
+                        name="privacyPolicy"
+                        component={PrivacyPolicy}
                         options={{ headerShown: false }}
                     />
                     <Drawer.Screen

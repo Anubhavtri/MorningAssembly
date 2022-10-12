@@ -24,8 +24,8 @@ const Splash = props => {
 
         } else {
           console.log('else is working ');
-         props.navigation.replace('SelectType', { name: 'Jane 123456789' });
-         // props.navigation.replace('TestingKeyboard', { name: 'Jane 123456789' });
+          //  props.navigation.replace('SelectType', { name: 'Jane 123456789' });
+          props.navigation.replace('Login', { Type: '2' });
 
         }
       } catch (e) {
@@ -35,7 +35,7 @@ const Splash = props => {
     }, (Platform.OS === 'ios') ? 0 : 2000);
 
   }, []);
-  
+
   const createChannel = () => {
     PushNotification.createChannel(
       {
@@ -60,7 +60,7 @@ const Splash = props => {
               backgroundColor: 'transparent',
               alignContent: 'center',
               alignSelf: 'center',
-              resizeMode:'contain'
+              resizeMode: 'contain'
             }}
             source={require('../images/logo.png')} />}
 

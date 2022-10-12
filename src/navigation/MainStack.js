@@ -1,12 +1,14 @@
 import React from 'react';
 
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
- import HomeScreen from './stack/UserDashboard';
- import DriverDashboardStack from './stack/DriverDashboardStack';
- import AddPostStack from './stack/AddPostStack';
- import Notification from './stack/NotificaationStack';
- import EditProfile from './stack/EditProfileStack';
- import FeedDetailStack from './stack/FeedDetailStack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from './stack/UserDashboard';
+import DriverDashboardStack from './stack/DriverDashboardStack';
+import AddPostStack from './stack/AddPostStack';
+import Notification from './stack/NotificaationStack';
+import EditProfile from './stack/EditProfileStack';
+import FeedDetailStack from './stack/FeedDetailStack';
+import privacyPolicy from '../screens/HomeScreen/PrivacyPolicy';
+import PrivacyPolicyStack from './stack/PrivacyPolicyStack';
 
 // import MySkill from './stack/MySkillStack';
 // import PrivacyPolicy from './stack/PrivacyPolicyStack';
@@ -19,35 +21,40 @@ const Stack = createNativeStackNavigator();
 const MainStack = () => {
   return (
     <Stack.Navigator>
-       <Stack.Screen
+      <Stack.Screen
         name="Home"
         component={HomeScreen}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="DriverDashboardStack"
         component={DriverDashboardStack}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="AddPostStack"
         component={AddPostStack}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="NotificationStack"
         component={Notification}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="EditProfileStack"
         component={EditProfile}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PrivacyPolicytack"
+        component={PrivacyPolicyStack}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="FeedDetailStack"
         component={FeedDetailStack}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
       {/* <Stack.Screen
         name="SkillDetailStack"
@@ -90,7 +97,7 @@ const MainStack = () => {
         options={{headerShown: false}}
       />  */}
 
-       {/* <Stack.Screen
+      {/* <Stack.Screen
             name="NotificationControll"
             component={PushController}
             options={{ headerShown: false }}

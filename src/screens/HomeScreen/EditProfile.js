@@ -122,7 +122,7 @@ const EditProfile = props => {
                         storeUserData(school_id, bus_no, name);
                         notifyMessage('Profile Updated Successfully !');
                         // props.navigation.navigate('OTP', { name: 'Jane 123456789' })
-                         props.navigation.goBack();
+                        props.navigation.goBack();
                         //props.navigation.navigate('Home', { name: 'Jane 123456789' });
                     } catch (error) {
                         console.log('Exception' + error.test);
@@ -291,6 +291,7 @@ const EditProfile = props => {
                                     placeholderTextColor={colors.WHITE_COLOR}
                                     fontFamily={fonts('poppinsRegular')}
                                     mode="outlined"
+                                    editable={false}
                                     returnKeyType={'next'}
                                     outlineColor={colors.WHITE_COLOR}
                                     selectionColor='transparent'
@@ -451,11 +452,11 @@ const EditProfile = props => {
                                     notifyMessage('This field is not Empty !');
                                 } else if (mobile == '' || mobile.length != 10) {
                                     notifyMessage('Incorrect Mobile Number !');
-                                 } 
-                                 //else if (password == '') {
+                                }
+                                //else if (password == '') {
                                 //     notifyMessage('This field is not Empty !');
                                 // }
-                                 else if (bus_no == '' || bus_no == 'Bus No.') {
+                                else if (bus_no == '' || bus_no == 'Bus No.') {
                                     notifyMessage('This field is not Empty !');
                                 } else if (school_code == '' || school_code == 'School Code') {
                                     notifyMessage('This field is not Empty !');
@@ -523,7 +524,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: colors.SECONDARY_COLOR
+        backgroundColor: '#98A8F8'
 
 
     },
@@ -639,9 +640,9 @@ const storeData = async value => {
         // saving error
     }
 };
-const storeUserData = async ( School_code, Bus_no, full_name) => {
+const storeUserData = async (School_code, Bus_no, full_name) => {
     try {
-       
+
         await AsyncStorage.setItem('@school_code', School_code);
         await AsyncStorage.setItem('@bus_no', Bus_no);
         await AsyncStorage.setItem('@full_name', full_name);

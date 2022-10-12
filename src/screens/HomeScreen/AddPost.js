@@ -55,9 +55,10 @@ const AddPost = props => {
             setfullname(response1);
         }
         fetchData();
+        console.log('videoProps', props);
     }, []);
     useEffect(() => {
-        if (props?.route?.params?.Image_Path != null) {
+        if (props?.route?.params?.Image_Path != null || props?.route?.params?.Video_Path != null) {
             uploadFileOnBase64();
         }
     }, []);
@@ -66,11 +67,18 @@ const AddPost = props => {
         try {
             console.log("Add Post uploadFileOnBase64 is working");
             const client = await loggedInClient();
-            var data = {
-                data: props?.route?.params?.Image_Path,
-                file_name: 'feed1.jpg',
-                file_type: "jpg"
-            };
+            let data;
+            props?.route?.params?.Video_Path != null ?
+                data = {
+                    data: props?.route?.params?.Image_Path,
+                    file_name: new Date() + 'video.jpg',
+                    file_type: "mp4"
+                } :
+                data = {
+                    data: props?.route?.params?.Image_Path,
+                    file_name: 'feed1.jpg',
+                    file_type: "jpg"
+                };
             console.log("uploadFileOnBase64", JSON.stringify(data));
             client
                 .post(APIName.uploadFileBase64, data)
@@ -108,7 +116,7 @@ const AddPost = props => {
     const getschool_code = async () => {
         try {
             const retrievedItem = await AsyncStorage.getItem('@school_code');
-            
+
             return retrievedItem;
         } catch (error) {
             console.log('getAccessToken', 'Error retrieving data');
@@ -130,7 +138,7 @@ const AddPost = props => {
                 description: description,
                 url: updatedImageUrl,
                 feed_type: 'image',
-                school_code:await getschool_code(),
+                school_code: await getschool_code(),
             };
             console.log("addFeed", JSON.stringify(data));
             client
@@ -210,8 +218,8 @@ const AddPost = props => {
                 }}
                 style={{ height: s(205), width: '100%', }}
             />
-            <Text style={{marginTop: s(10),marginLeft: s(10),fontFamily:fonts('poppinsRegular'),color:colors.PRIMARY_TEXT_COLOR}}>Title</Text>
-            <View style={{ padding: s(2), marginLeft: s(10),marginRight:s(10), height: s(40), borderWidth: s(0.5), borderColor: colors.DARK_GRAY, borderRadius: s(5) }}>
+            <Text style={{ marginTop: s(10), marginLeft: s(10), fontFamily: fonts('poppinsRegular'), color: colors.PRIMARY_TEXT_COLOR }}>Title</Text>
+            <View style={{ padding: s(2), marginLeft: s(10), marginRight: s(10), height: s(40), borderWidth: s(0.5), borderColor: colors.DARK_GRAY, borderRadius: s(5) }}>
                 <TextInput
                     theme={{ colors: { primary: colors.WHITE_COLOR } }}
                     style={styles.input}
@@ -229,8 +237,8 @@ const AddPost = props => {
 
                 />
             </View>
-            <Text style={{marginTop: s(10),marginLeft: s(10),fontFamily:fonts('poppinsRegular'),color:colors.PRIMARY_TEXT_COLOR}}>Description</Text>
-            <View style={{ padding: s(2), marginLeft: s(10),marginRight:s(10), height: s(100), borderWidth: s(0.5), borderColor: colors.DARK_GRAY, borderRadius: s(5) }}>
+            <Text style={{ marginTop: s(10), marginLeft: s(10), fontFamily: fonts('poppinsRegular'), color: colors.PRIMARY_TEXT_COLOR }}>Description</Text>
+            <View style={{ padding: s(2), marginLeft: s(10), marginRight: s(10), height: s(100), borderWidth: s(0.5), borderColor: colors.DARK_GRAY, borderRadius: s(5) }}>
                 <TextInput
                     theme={{ colors: { primary: colors.WHITE_COLOR } }}
                     style={styles.input}

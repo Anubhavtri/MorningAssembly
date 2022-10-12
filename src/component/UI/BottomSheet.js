@@ -15,7 +15,7 @@ import loggedInClient from '../../utility/apiAuth/loggedInClient';
 import APIName from '../../utility/api/apiName';
 
 
-const BottomSheet = ({ visible, visibleFun, myCallback, title, data, feed_id ,confirmation}) => {
+const BottomSheet = ({ visible, visibleFun, myCallback, title, data, feed_id, confirmation }) => {
   const [getloader, setloader] = useState(false);
   const [comment, setComment] = useState('');
   function notifyMessage(msg) {
@@ -67,7 +67,7 @@ const BottomSheet = ({ visible, visibleFun, myCallback, title, data, feed_id ,co
   const renderItem_requested_skill = (item, index) => {
     return (
       <TouchableOpacity
-        onPress={() =>{
+        onPress={() => {
           console.log("dkljfkldjkfj")
           confirmation(item?._id);
         }
@@ -158,7 +158,7 @@ const BottomSheet = ({ visible, visibleFun, myCallback, title, data, feed_id ,co
           style={{ marginBottom: s(60), margin: s(3) }}
           nestedScrollEnabled={true}
           showsVerticalScrollIndicator={false}
-          data={data}
+          data={data.reverse()}
           renderItem={({ item, index }) => {
             return renderItem_requested_skill(item, index);
 
