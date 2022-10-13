@@ -409,7 +409,7 @@ const User_Dashboard = props => {
 
                                 </View>
                             </TouchableOpacity>
-                            {role === 3 ?
+                            {role === '3' ?
                                 <TouchableOpacity
                                     style={{ flex: 1, justifyContent: 'center', marginRight: s(2) }}
                                     onPress={() => {
@@ -463,10 +463,8 @@ const User_Dashboard = props => {
                                                 : <Text style={{ backgroundColor: 'transparent', justifyContent: 'center', alignContent: 'center', alignItems: 'center', textAlign: 'center', fontFamily: fonts('poppinsSemibold'), fontSize: s(10), color: colors.SECONDARY_TEXT_COLOR }}>Activities</Text>
                                             }
                                         </View>
-
                                     </View>
-                                </TouchableOpacity>
-                            }
+                                </TouchableOpacity>}
                         </View>
                     </View>
 

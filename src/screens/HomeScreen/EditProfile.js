@@ -291,7 +291,7 @@ const EditProfile = props => {
                                     placeholderTextColor={colors.WHITE_COLOR}
                                     fontFamily={fonts('poppinsRegular')}
                                     mode="outlined"
-                                    editable={false}
+                                    // editable={false}
                                     returnKeyType={'next'}
                                     outlineColor={colors.WHITE_COLOR}
                                     selectionColor='transparent'

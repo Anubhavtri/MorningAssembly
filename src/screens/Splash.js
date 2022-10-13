@@ -24,8 +24,9 @@ const Splash = props => {
 
         } else {
           console.log('else is working ');
-          //  props.navigation.replace('SelectType', { name: 'Jane 123456789' });
-          props.navigation.replace('Login', { Type: '2' });
+          props.navigation.replace('SelectType', { name: 'Jane 123456789' });
+          // props.navigation.navigate('Login', { type: '2' })
+          // props.navigation.replace('Login', { Type: '2' });
 
         }
       } catch (e) {
