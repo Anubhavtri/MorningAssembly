@@ -101,6 +101,7 @@ const User_Dashboard = props => {
             client
                 .get(apiName.schools)
                 .then(response => {
+                    console.log('school------------', resposne.data)
                     if (response.status == 200) {
                         let data = response.data.data;
                         try {

@@ -85,7 +85,7 @@ const Login = props => {
                     console.log('Response data from axios' + JSON.stringify(response));
                     try {
                         setloader(false);
-                         storeData(props?.route?.params?.type);
+                        storeData(props?.route?.params?.type);
                         // storeUserData(response.data.data.id, response.data.data.school_code, response.data.data.bus_number, response.data.data.access_token, response.data.data.full_name);
                         // 
                         notifyMessage('Successfully SignIn !');
@@ -140,9 +140,10 @@ const Login = props => {
                         storeUserData(response.data.data.id, response.data.data.school_code, response.data.data.bus_number, response.data.data.access_token, response.data.data.full_name);
                         //props.navigation.navigate('OTP', { name: 'Jane 123456789' })
                         notifyMessage('Successfully SignIn !');
-                       // props.navigation.replace('Authorized', { name: 'Jane 123456789' })
-                       props.navigation.navigate('OTP', { type: props?.route?.params?.type,mobile:mobile,
-                       })
+                        // props.navigation.replace('Authorized', { name: 'Jane 123456789' })
+                        props.navigation.navigate('OTP', {
+                            type: props?.route?.params?.type, mobile: mobile,
+                        })
 
                     } catch (error) {
                         console.log('Exception' + error.test);
@@ -225,7 +226,7 @@ const Login = props => {
                         value={email}
                         onChangeText={text => setEmail(text)}
                         keyboardType="numeric"
-                       // onSubmitEditing={() => ref_input2.current.focus()}
+                    // onSubmitEditing={() => ref_input2.current.focus()}
 
                     />
                 </View>

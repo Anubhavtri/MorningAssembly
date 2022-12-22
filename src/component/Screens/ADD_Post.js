@@ -36,15 +36,6 @@ const ADD_Post = props => {
         if (cameraRef && cameraRef.current) {
             cameraRef.current.open({ maxLength: 30 }, (data) => {
                 props.navigation.navigate('AddPostStack', { Video_Path: data?.uri })
-                try {
-                    ReactNativeFirebase.readFile(data.uri, 'base64')
-                        .then(res => {
-                            // setImageBase64_data(res);
-                            console.log('captured data', res); // data.uri is the file path
-
-                        });
-                } catch (error) {
-                }
             });
         }
     }

@@ -71,7 +71,7 @@ const AddPost = props => {
             props?.route?.params?.Video_Path != null ?
                 data = {
                     data: props?.route?.params?.Image_Path,
-                    file_name: new Date() + 'video.jpg',
+                    file_name: new Date() + 'video.mp4',
                     file_type: "mp4"
                 } :
                 data = {
